@@ -133,7 +133,3 @@ dependencies:
   - zstd=1.4.4
   - pip:
     - imgstore==0.2.9
-    - pyqt5-sip==4.19.18
-    - pyqtchart==5.12
-    - pyqtwebengine==5.12.1
-    - tzlocal==2.1

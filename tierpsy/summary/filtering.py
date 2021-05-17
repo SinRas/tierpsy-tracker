@@ -47,6 +47,7 @@ def _by_timeseries_values(
 
     return timeseries_data
 
+
 def filter_trajectories(
         timeseries_data, blob_features,
         min_traj_length=None, time_units=None,
@@ -54,20 +55,23 @@ def filter_trajectories(
         timeseries_names=None, min_thresholds=None,
         max_thresholds=None, units=None):
 
-    if (min_traj_length is not None) and (min_traj_length>0):
+    if (min_traj_length is not None) and (min_traj_length > 0):
         timeseries_data = _traj_lenght(timeseries_data, min_traj_length)
-        blob_features =  blob_features.loc[timeseries_data.index, :]
+        if blob_features is not None:
+            blob_features = blob_features.loc[timeseries_data.index, :]
 
     if min_distance_traveled is not None:
         timeseries_data = _distance_traveled(
             timeseries_data, min_distance_traveled)
-        blob_features =  blob_features.loc[timeseries_data.index, :]
+        if blob_features is not None:
+            blob_features = blob_features.loc[timeseries_data.index, :]
 
-    if timeseries_names is not None and len(timeseries_names)>0:
-        for name, min_thres, max_thres in \
-            zip(timeseries_names, min_thresholds, max_thresholds):
-                timeseries_data = _by_timeseries_values(
-                    timeseries_data, name, min_thres, max_thres)
-                blob_features =  blob_features.loc[timeseries_data.index, :]
+    if (timeseries_names is not None) and (len(timeseries_names) > 0):
+        for name, min_thres, max_thres in zip(
+                timeseries_names, min_thresholds, max_thresholds):
+            timeseries_data = _by_timeseries_values(
+                timeseries_data, name, min_thres, max_thres)
+            if blob_features is not None:
+                blob_features = blob_features.loc[timeseries_data.index, :]
 
     return timeseries_data, blob_features
