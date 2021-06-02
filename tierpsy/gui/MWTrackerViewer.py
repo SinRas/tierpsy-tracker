@@ -1036,7 +1036,8 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
         #add this column if it does not exist
         if not 'has_skeleton' in self.trajectories_data:
-            self.trajectories_data['has_skeleton'] = self.trajectories_data['skeleton_id'] >= 0
+            self.trajectories_data['has_skeleton'] = (
+                self.trajectories_data['skeleton_id'] >= 0).astype(np.uint8)
 
         self.updateWormIndexTypeMenu()
         self.updateImage()

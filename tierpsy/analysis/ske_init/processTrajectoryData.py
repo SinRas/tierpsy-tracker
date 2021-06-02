@@ -19,6 +19,23 @@ from tierpsy.helper.params import copy_unit_conversions, ske_init_defaults
 from tierpsy.analysis.ske_init.filterTrajectModel import filterModelWorms
 from tierpsy.helper.misc import TABLE_FILTERS
 
+
+TRAJECTORIES_DATA_DTYPES = [
+    ('frame_number', np.int32),
+    ('worm_index_joined', np.int32),
+    ('plate_worm_id', np.int32),
+    ('skeleton_id', np.int32),
+    ('coord_x', np.float32),
+    ('coord_y', np.float32),
+    ('threshold', np.float32),
+    ('has_skeleton', np.uint8),
+    ('roi_size', np.float32),
+    ('area', np.float32),
+    ('timestamp_raw', np.float32),
+    ('timestamp_time', np.float32)
+    ]
+
+
 def getSmoothedTraj(trajectories_file,
                     min_track_size=100,
                     displacement_smooth_win=101,
@@ -109,18 +126,7 @@ def getSmoothedTraj(trajectories_file,
     tot_num_rows = _get_total_number_rows(df, min_track_size)
 
     # initialize output data as a numpy recarray (pytables friendly format)
-    trajectories_df = np.recarray(tot_num_rows, dtype=[('frame_number', np.int32),
-                                                       ('worm_index_joined', np.int32),
-                                                       ('plate_worm_id', np.int32),
-                                                       ('skeleton_id', np.int32),
-                                                       ('coord_x', np.float32),
-                                                       ('coord_y', np.float32),
-                                                       ('threshold', np.float32),
-                                                       ('has_skeleton', np.uint8),
-                                                       ('roi_size', np.float32),
-                                                       ('area', np.float32),
-                                                       ('timestamp_raw', np.float32),
-                                                       ('timestamp_time', np.float32)])
+    trajectories_df = np.recarray(tot_num_rows, dtype=TRAJECTORIES_DATA_DTYPES)
 
     # store the maximum and minimum frame of each worm
     worms_frame_range = {}
@@ -224,7 +230,9 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         trajectories_data_f = ske_file_id.create_table(
             '/',
             'trajectories_data',
-            obj=trajectories_data.to_records(index=False),
+            obj=trajectories_data.to_records(
+                index=False,
+                column_dtypes={t[0]: t[1] for t in TRAJECTORIES_DATA_DTYPES}),
             filters=TABLE_FILTERS)
 
         plate_worms = ske_file_id.get_node('/plate_worms')
@@ -287,7 +295,10 @@ if __name__ == '__main__':
     ff = 'syngenta_screen_run1_bluelight_20191205_151104.22956805/'
     ff += 'metadata.hdf5'
 
-    model_path = get_model_filter_worms('pytorch_default')
+    model_path = get_model_filter_worms({
+        'nn_filter_to_use': 'pytorch_default',
+        'path_to_custom_pytorch_model': ''
+        })
 
     masked_image_file = os.path.join(root_dir, ff)
     skeletons_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
