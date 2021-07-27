@@ -3,11 +3,13 @@ from functools import partial
 import numpy as np
 import tables
 import os
+import warnings
 
 try:
-    from keras.models import load_model
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=FutureWarning)
+        from keras.models import load_model
 except ImportError:
-    import warnings
     warnings.warn("`keras` is not found, this will break contour finding ",
                   + "on *_AEX analysis, and may break filter trajectories ",
                   + "unless pytorch is being used")
@@ -15,7 +17,6 @@ except ImportError:
 try:
     import torch
 except ImportError:
-    import warnings
     warnings.warn("`pytorch` not found, this may break filter trajectories ")
 
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI, getROIFixSize
