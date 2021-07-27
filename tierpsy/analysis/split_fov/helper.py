@@ -186,8 +186,13 @@ def serial2channel(camera_serial):
 def parse_camera_serial(filename):
     import re
     regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-    camera_serial = re.findall(regex, str(filename).lower())[0]
+    camera_serial = re.findall(regex, str(filename).lower())
+    if len(camera_serial) > 0:
+        camera_serial = camera_serial[0]
+    else:
+        camera_serial = None
     return camera_serial
+
 
 
 def get_bgnd_from_masked(masked_image_file, is_use_existing=False):
@@ -203,7 +208,8 @@ def get_bgnd_from_masked(masked_image_file, is_use_existing=False):
     from tierpsy.helper.params import read_unit_conversions
 
     # read attributes of masked_image_file
-    _, (microns_per_pixel, xy_units) , is_light_background = read_unit_conversions(masked_image_file)
+    _, (microns_per_pixel, xy_units), is_light_background = (
+        read_unit_conversions(masked_image_file))
     # get "background" and px2um
     with pd.HDFStore(masked_image_file, 'r') as fid:
         assert is_light_background, \
@@ -219,7 +225,9 @@ def get_bgnd_from_masked(masked_image_file, is_use_existing=False):
     return img, camera_serial, microns_per_pixel
 
 
-def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='float'):
+
+def make_square_template(
+        n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='float'):
     import numpy as np
     """Function that creates a template that approximates a square well"""
     n_pxls = int(np.round(n_pxls))
@@ -247,9 +255,36 @@ def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='flo
     else:
         raise ValueError("Only 'float' and 'uint8' are valid dtypes for this")
 
-
     return zz
 
+
+def make_circular_template(
+        n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='float'):
+    import numpy as np
+    """Function that creates a template that approximates a circular well"""
+    n_pxls = int(np.round(n_pxls))
+    x = np.linspace(-0.5, 0.5, n_pxls)
+    y = np.linspace(-0.5, 0.5, n_pxls)
+    xx, yy = np.meshgrid(x, y, sparse=False, indexing='ij')
+    rr = np.hypot(xx, yy)
+
+    # inspired by Mark Shattuck's function to make a colloid's template
+    zz = (1 - np.tanh( (abs(rr)-rel_width/2)/blurring )) / 2
+
+    # add bright border
+    foo = rr > (0.5 * rel_width + 0.08)
+    print(foo.mean())
+    zz[foo] = 1
+
+    if dtype_out == 'uint8':
+        zz *= 255
+        zz = zz.astype(np.uint8)
+    elif dtype_out == 'float':
+        pass
+    else:
+        raise ValueError("Only 'float' and 'uint8' are valid dtypes for this")
+
+    return zz
 
 # def was_fov_split(timeseries_data):
 #     """
@@ -314,11 +349,13 @@ def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_sh
 
     # determine where the wells wil go in the padded canvas
     if nwells is not None:
+        if isinstance(nwells, tuple):
+            n_rows, n_cols = nwells
         r_wells = range(y_offset+padding,
-                        y_offset+padding+nwells*spacing,
+                        y_offset+padding+n_rows*spacing,
                         spacing)
         c_wells = range(x_offset+padding,
-                        x_offset+padding+nwells*spacing,
+                        x_offset+padding+n_cols*spacing,
                         spacing)
     else:
         r_wells = range(y_offset+padding,
@@ -330,10 +367,21 @@ def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_sh
     tmpl_pos_in_padded_canvas = [(r,c) for r in r_wells for c in c_wells]
 
     # make the template for the wells
-    tmpl = make_square_template(n_pxls=spacing,
-                                rel_width=0.7,
-                                blurring=0.1,
-                                dtype_out='float')
+    if template_shape == 'square':
+        tmpl = make_square_template(
+            n_pxls=spacing,
+            rel_width=0.7,
+            blurring=0.1,
+            dtype_out='float')
+    elif template_shape == 'circle':
+        tmpl = make_circular_template(
+            n_pxls=spacing,
+            rel_width=0.7,
+            blurring=0.1,
+            dtype_out='float')
+    else:
+        raise ValueError(
+            f'template_shape {template_shape} not coded yet')
     # invert
     tmpl = 1-tmpl
 
@@ -375,22 +423,24 @@ def get_well_color(is_good_well, forCV=False):
 
 if __name__ == '__main__':
 
-    # test that camera serials return the correct channel
-    serials_list = [line[0] for line in CAM2CH_list]
-#    serials_list.append('22594540') # this raise an exception as it does not exist
-    for serial in serials_list:
-        print('{} -> {}'.format(serial, serial2channel(serial)))
-    # that works as intended!
+    import json
+    from tierpsy import DFLT_SPLITFOV_PARAMS_PATH
+    with open(
+            DFLT_SPLITFOV_PARAMS_PATH + '/HYDRA_96WP_UPRIGHT.json', 'r') as fid:
+        foo = json.load(fid)
+    camera2channelrig_dict = foo['camera2channelrig']
+    channel2well_dict = foo['channel2well']
+
 
     # let's now check that the camera name is parsed correctly I guess
     from pathlib import Path
     src_dir = Path('/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/MaskedVideos/20190808')
     masked_fnames = src_dir.rglob('*.hdf5')
     for fname in masked_fnames:
-        camera_serial = parse_camera_serial(fname)
-        print(fname)
-        print(camera_serial)
-        print(serial2channel(camera_serial))
-        print(' ')
+        old_results = serial2rigchannel(parse_camera_serial(fname))
+        new_results = filename2uidrigchannel(fname, camera2channelrig_dict)
+        assert old_results == new_results[1:], (
+            f'{fname}, {old_results}, {new_results[1:]}')
+
     # this too works perfectly... but I saw wrong data was written in the masked videos
     # so have to check what went wrong there

@@ -38,27 +38,27 @@ import subprocess
 # json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
 #%% Evgeny's example data
-rootdir = '/Volumes/hermes$/Recordings/20190822/'
-imgstore_name = 'evgeny_plat10_r5_20190822_125103.22594559/'
-json_file = '/Volumes/hermes$/Recordings/hydra_96WP_upright.json'
+# rootdir = '/Volumes/hermes$/Recordings/20190822/'
+# imgstore_name = 'evgeny_plat10_r5_20190822_125103.22594559/'
+# json_file = '/Volumes/hermes$/Recordings/hydra_96WP_upright.json'
 #%% other example data
-rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
-imgstore_name='drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
-json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
+# rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
+# imgstore_name='drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
+# json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
-rootdir = '/Users/lferiani/Desktop/20200107_test/'
+# rootdir = '/Users/lferiani/Desktop/20200107_test/'
 #imgstore_name='20191211/syngenta_screen_run2_prestim_20191211_153921.22956837/'
-imgstore_name='20191211/syngenta_screen_run1_bluelight_20191211_145659.22956823/'
-json_file = '/Users/lferiani/Desktop/20200107_test/loopbio_rig_96WP_splitFOV_20200109.json'
+# imgstore_name='20191211/syngenta_screen_run1_bluelight_20191211_145659.22956823/'
+# json_file = '/Users/lferiani/Desktop/20200107_test/loopbio_rig_96WP_splitFOV_20200109.json'
 
-rootdir = '/Volumes/behavgenom$/Saul/MicrobiomeAssay96WP/'
-imgstore_name='20200123/microbiome_run1_lb_plate0_20200123_134049.22956805/'
-json_file = '/Users/lferiani/Desktop/loopbio_rig_96WP_upright_splitFOV_Microbiome_20200110.json'
+# rootdir = '/Volumes/behavgenom$/Saul/MicrobiomeAssay96WP/'
+# imgstore_name='20200123/microbiome_run1_lb_plate0_20200123_134049.22956805/'
+# json_file = '/Users/lferiani/Desktop/loopbio_rig_96WP_upright_splitFOV_Microbiome_20200110.json'
 
-rootdir = '/Users/lferiani/Hackathon/multiwell_tierpsy/3_TRAJ_JOIN/'
+rootdir = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/'
 imgstore_name = '20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/'
-json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_pytorch.json'
-# json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_tensorflow.json'
+# json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_pytorch.json'
+json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_pytorch_newsplitFOVspecs.json'
 
 #%%
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
@@ -70,24 +70,24 @@ masked_image_file = maskedvideosdir + 'metadata.hdf5'
 features_file = resultsdir + 'metadata_featuresN.hdf5'
 skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
-
 # restore features after previous step before testing
 import shutil
 # shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
-shutil.copy(skeletons_file.replace('.hdf5', '.bak'), skeletons_file)
+# shutil.copy(skeletons_file.replace('.hdf5', '.bak'), skeletons_file)
 
 
 # don't pass the path to python if calling it as a function
 # compress
-sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
-                 raw_video,
-                 '--masks_dir', maskedvideosdir,
-                 '--results_dir', resultsdir,
-                 '--json_file', json_file,
-                 '--analysis_checkpoints', 'COMPRESS',
-                                           'TRAJ_CREATE',
-                                           'TRAJ_JOIN',
-                                           'SKE_INIT']
+sys_argv_list = [
+    '/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+    raw_video,
+    '--masks_dir', maskedvideosdir,
+    '--results_dir', resultsdir,
+    '--json_file', json_file,
+    '--analysis_checkpoints', 'COMPRESS']
+                        #    'TRAJ_CREATE',
+                        #    'TRAJ_JOIN',
+                        #    'SKE_INIT']
 
 #sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
 #                 masked_image_file,
@@ -137,3 +137,5 @@ ProcessWorker(**args, cmd_original = subprocess.list2cmdline(sys_argv_list))
 
 #clear temporary files
 local_obj.clean()
+
+# %%

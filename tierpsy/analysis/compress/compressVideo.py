@@ -13,6 +13,7 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorV
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.params import compress_defaults, set_unit_conversions
+from tierpsy.helper.params.tracker_param import SplitFOVParams
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 from tierpsy.analysis.split_fov.helper import parse_camera_serial
 from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
@@ -217,9 +218,9 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
 
 
 def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
-                  microns_per_pixel=None, bgnd_param ={}, buffer_size=-1,
+                  microns_per_pixel=None, bgnd_param={}, buffer_size=-1,
                   save_full_interval=-1, max_frame=1e32, is_extract_timestamp=False,
-                  fovsplitter_param={}):
+                  fovsplitter_json_path=''):
     '''
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of
     the image zero. By creating a large amount of redundant data, any lossless compression
@@ -251,10 +252,8 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
     else:
         is_bgnd_subtraction = False
 
-    if len(fovsplitter_param) > 0:
+    if fovsplitter_json_path:
         is_fov_tosplit = True
-        assert all(key in fovsplitter_param for key in ['total_n_wells', 'whichsideup', 'well_shape'])
-        assert fovsplitter_param['total_n_wells']>0
     else:
         is_fov_tosplit = False
 
@@ -300,19 +299,29 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
         vid = selectVideoReader(video_file)
 
     if is_fov_tosplit:
-        # TODO: change class creator so it only needs the video name? by using
-        # Tierpsy's functions such as selectVideoReader it can then read the first image by itself
 
-        camera_serial = parse_camera_serial(masked_image_file)
+        # initialise parameters parser
+        splitfovparams = SplitFOVParams(json_file=fovsplitter_json_path)
+        # get common pars and sspecific wells mapping for this channel
+        shape, edge_frac, sz_mm = splitfovparams.get_common_params()
+        uid, rig, ch, mwp_map = splitfovparams.get_params_from_filename(
+            masked_image_file)
+        # use parameters to initialise the fov splitting class
+        fovsplitter = FOVMultiWellsSplitter(
+            img_fov,
+            microns_per_pixel=microns_per_pixel,
+            well_shape=shape,
+            well_size_mm=sz_mm,
+            well_masked_edge=edge_frac,
+            camera_serial=uid,
+            rig=rig,
+            channel=ch,
+            wells_map=mwp_map
+        )
 
-        fovsplitter = FOVMultiWellsSplitter(img_fov,
-                                            camera_serial=camera_serial,
-                                            px2um=microns_per_pixel,
-                                            **fovsplitter_param)
         wells_mask = fovsplitter.wells_mask
     else:
         wells_mask = None
-
 
 
     # initialize timers
