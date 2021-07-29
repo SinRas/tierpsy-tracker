@@ -19,22 +19,49 @@ You will need three things to use Tierpsy with Docker:
    and [XQuartz](https://www.xquartz.org/) for macOS.
 
 ### Installation on Windows 10
+**Note:**
+*While you do not need to have admin rights to run Tierpsy on Docker in Windows,
+you will need them for the installation process.*
+
+This guide looks long, but it's just *that* thorough. An average time to run through this is 20 minutes.
 
 #### 1. Install Docker
 
-[Here](https://docs.docker.com/docker-for-windows/install/) are some very thorough instructions.
+Download and run the installer from [here](https://desktop.docker.com/win/stable/amd64/Docker%20Desktop%20Installer.exe) *[Needs admin rights]*.
 
-Briefly, download and run the installer from [here](https://desktop.docker.com/win/stable/amd64/Docker%20Desktop%20Installer.exe).
-You can keep the default installation settings, just make sure that Docker is installed in
-`C:\Program Files\Docker`, and if you're asked to install the "required Windows components for WSL 2" say yes.
+You can keep the default installation settings.
+If prompted about it, make sure that Docker is installed in `C:\Program Files\Docker`, and if you're asked to install the "required Windows components for WSL 2" say yes.
 Restart the computer when required to do so.
 
 After restarting, you'll likely be told that the "WSL2 installation is incomplete".
 Follow the link in the warning message and install the "WSL2 Linux Kernel".
 [Here](https://medium.com/@tushar0618/installing-docker-desktop-on-window-10-501e594fc5eb#:~:text=5.%20Once%20your,approve%20this%20installation) is a short guide with screenshots.
 
-Then restart the computer again, and run the Docker Desktop app from the start menu.
+Then restart the computer again.
 
+>If you are not an administrator of the computer, your user needs to be added to the local group named "docker-users".\
+>From a PowerShell or command prompt with Administrator rights, run `net localgroup docker-users your_username_here /add`
+
+Now run the Docker Desktop app from the start menu.
+
+
+> At this point you *may* be prompted with a nasty looking error message about needing to enable virtualisation in the BIOS. How to do this is highly dependent on the computer model, but the main steps are:
+> + turn off your computer
+> + turn it back on
+> + press F2/DEL to enter the BIOS when prompted
+>   + the right key to press might change, the computer will tell you which one to press.
+>   + pay close attention as the message could be on screen for a very short time if you have an SSD
+>   + spamming the right key during the startup is often a successful strategy
+> + in the BIOS, find the options related to the CPU (could be named Northbridge, or Chipset)
+>   + this might be under an **Advanced Options** section
+> + find the option that allows you to enable hardware virtualisation
+>   + be on the lookeout for options such as **Hyper-V**, **Vanderpool**, **SVM**, **AMD-V**, **Intel Virtualization Technology** or **VT-X**
+>   + if you see options for **Intel VT-d** or **AMD IOMMU** enable those as well
+> + save the changes and exit the BIOS
+> + start the computer as usual
+
+For reference, you can find the full documentation on how to install Docker on windows
+[here](https://docs.docker.com/docker-for-windows/install/).
 
 #### 2. Get the Tierpsy image
 
@@ -51,15 +78,16 @@ docker pull lferiani/tierpsy-tracker
 ```
 ![Pull image](https://user-images.githubusercontent.com/33106690/127388016-f3e80f4f-73f1-48d2-b244-27f72a542c0b.png)
 
-press `Enter` on your keyboard and wait for the download to be finished.
+press `Enter` on your keyboard and wait for the download to be finished. This will take a few minutes, but you can move to the next step in the meantime.
 
 ![Image downloading](https://user-images.githubusercontent.com/33106690/127388063-5849bf82-9eb0-4b9f-afaa-9d27ca93024b.png)
 
 
 #### 3. Install VcXsrv
 
-Download and run the [installer](https://sourceforge.net/projects/vcxsrv/files/latest/download),
-then follow the installation wizard, making sure VcXsrv is being installed in `C:\Program Files\VcXsrv`
+Download and run the [installer](https://sourceforge.net/projects/vcxsrv/files/latest/download) *[needs admin rights]*.
+
+Follow the installation wizard, making sure VcXsrv is being installed in `C:\Program Files\VcXsrv`
 
 ![vcxsrv_1](https://user-images.githubusercontent.com/33106690/127391065-b8d68844-d2e5-4652-8b44-84d4fcb11f25.png)|![vcxsrv_1](https://user-images.githubusercontent.com/33106690/127391067-49dfe117-e41b-41b9-bb66-1039d06ea594.png)
 :---:|:--:
