@@ -5,7 +5,7 @@ You can now download and use Tierpsy Tracker as a Docker image.
 If you are not familiar with Docker, this is as if you were given a brand new
 computer with Tierpsy Tracker pre-installed.
 After the installation, you will only have to click on a Desktop icon to run
-Tierpsy Tracker
+Tierpsy.
 
 
 
@@ -13,7 +13,7 @@ Tierpsy Tracker
 
 You will need three things to use Tierpsy with Docker:
 1. Docker itself
-2. Tierpsy Tracker
+2. The docker image for Tierpsy Tracker
 3. A program to show Tierpsy's user interface.\
    We recommend [VcXsrv](https://sourceforge.net/projects/vcxsrv/) for Windows
    and [XQuartz](https://www.xquartz.org/) for macOS.
@@ -25,7 +25,7 @@ You will need three things to use Tierpsy with Docker:
 [Here](https://docs.docker.com/docker-for-windows/install/) are some very thorough instructions.
 
 Briefly, download and run the installer from [here](https://desktop.docker.com/win/stable/amd64/Docker%20Desktop%20Installer.exe).
-You can keep the default installation settings are fine, just make sure that Docker is installed in
+You can keep the default installation settings, just make sure that Docker is installed in
 `C:\Program Files\Docker`, and if you're asked to install the "required Windows components for WSL 2" say yes.
 Restart the computer when required to do so.
 
@@ -38,7 +38,7 @@ Then restart the computer again, and run the Docker Desktop app from the start m
 
 #### 2. Get the Tierpsy image
 
-If you have a Docker Hub account, or are OK with creating one, you can look for the
+If you have a Docker Hub account, or are ok with creating one, you can look for the
 `lferiani/tierpsy-tracker` image in the Docker Desktop app.
 
 Otherwise, open Powershell:
@@ -59,7 +59,7 @@ press `Enter` on your keyboard and wait for the download to be finished.
 #### 3. Install VcXsrv
 
 Download and run the [installer](https://sourceforge.net/projects/vcxsrv/files/latest/download),
-then follow the installation wizard, making sure VcXsrv is being installed in `C:\Program Files\VxXsrv`
+then follow the installation wizard, making sure VcXsrv is being installed in `C:\Program Files\VcXsrv`
 
 ![vcxsrv_1](https://user-images.githubusercontent.com/33106690/127391065-b8d68844-d2e5-4652-8b44-84d4fcb11f25.png)|![vcxsrv_1](https://user-images.githubusercontent.com/33106690/127391067-49dfe117-e41b-41b9-bb66-1039d06ea594.png)
 :---:|:--:
