@@ -23,7 +23,7 @@ You will need three things to use Tierpsy with Docker:
 *While you do not need to have admin rights to run Tierpsy on Docker in Windows,
 you will need them for the installation process.*
 
-This guide looks long, but it's just *that* thorough. An average time to run through this is 20 minutes.
+This guide looks long, but it should take somewhere between 20 and 40'.
 
 #### 1. Install Docker
 
