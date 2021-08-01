@@ -32,15 +32,26 @@ Download and run the installer from [here](https://desktop.docker.com/win/stable
 You can keep the default installation settings.
 If prompted about it, make sure that Docker is installed in `C:\Program Files\Docker`, and if you're asked to install the "required Windows components for WSL 2" say yes.
 Restart the computer when required to do so.
+![Docker Installation 1](https://user-images.githubusercontent.com/33106690/127778612-9e270d9c-e427-45f0-b047-881f17228408.png)|![Docker Installation 2](https://user-images.githubusercontent.com/33106690/127778614-8fcf7e01-28ea-4703-8219-372229b5e050.png)
+:---:|:---:
 
 After restarting, you'll likely be told that the "WSL2 installation is incomplete".
-Follow the link in the warning message and install the "WSL2 Linux Kernel".
-[Here](https://medium.com/@tushar0618/installing-docker-desktop-on-window-10-501e594fc5eb#:~:text=5.%20Once%20your,approve%20this%20installation) is a short guide with screenshots.
+Follow the link in the warning message and install the "WSL2 Linux Kernel",
+then restart the computer again.
 
-Then restart the computer again.
+
+![WSL2 error](https://user-images.githubusercontent.com/33106690/127776178-d2b74c64-e385-4cdd-96cd-dfdfe45c22b3.png)|![wsl 1](https://user-images.githubusercontent.com/33106690/127778815-3f869376-160d-4d4b-b442-a72c475d99db.png)|![wsl2](https://user-images.githubusercontent.com/33106690/127778819-6d3813ce-6965-4195-9faa-877ced59154e.png)
+:---:|:---:|:---:
+
+
 
 >If you are not an administrator of the computer, your user needs to be added to the local group named "docker-users".\
->From a PowerShell or command prompt with Administrator rights, run `net localgroup docker-users your_username_here /add`
+>From a PowerShell or command prompt with Administrator rights, run `net localgroup docker-users your_username_here /add`,
+>then log out of Windows and log and back in.
+>
+>![Screenshot (3)](https://user-images.githubusercontent.com/33106690/127778615-9bc879c8-a8bf-4e15-865f-0dfc94370677.png)|![docker-users](https://user-images.githubusercontent.com/33106690/127778618-a4a5456f-8cb4-4df5-9c4f-4687772a6a67.png)|![docker-users logout](https://user-images.githubusercontent.com/33106690/127778619-1836e7e5-11b0-4e56-aba1-698c2a1cddd6.png)
+>:---:|:---:|:---:
+
 
 Now run the Docker Desktop app from the start menu.
 
@@ -95,19 +106,24 @@ Follow the installation wizard, making sure VcXsrv is being installed in `C:\Pro
 
 #### 4. [Optional] Create a Desktop Launcher
 
-Download [this](https://github.com/luigiferiani/tierpsy-tracker/files/6896343/tierpsy.zip) zip, exctract the PowerShell script it contains, and save it on your Desktop.
+Download [this](https://github.com/Tierpsy/dockerize_tierpsy/files/6912980/tierpsy.ps1.zip) zip, extract the PowerShell script it contains, and save it on your Desktop.
 
-There is one modification you might want to do. When Tierpsy runs in Docker, it cannot access all of your hard drives. You need to configure what folders (or entire disks) Tierpsy has access to.
+There are a couple of modifications you might want to do. When Tierpsy runs in Docker, it cannot access all of your hard drives, or network shares.
+You need to configure what folders (or entire disks) Tierpsy has access to, and give it instructions to access the network share.
 
 By default, the launcher allows Tierpsy to see the entirety of the `D:\` drive.
-This is also the folder that Tierpsy starts in. If you want to modify this behaviour, just open the launcher with a text editor, and modify line 10 by putting the path of the folder you want Tierpsy to access.
+This is also the folder that Tierpsy starts in. If you want to modify this behaviour, just open the launcher with a text editor, and modify line 16 by putting the path of the folder you want Tierpsy to access.
 You'll have to substitute any `\` symbol in your path of choice with `/` symbols. The path should be enclosed in double quotation marks, e.g. `"c:/your/path/here"`.
 
-![Screenshot (11)](https://user-images.githubusercontent.com/33106690/127395925-597545a9-592c-4002-9e82-8d5618c31d8e.png)
+You can also give Tierpsy instructions on how to access your network shares. This process is akin to using Windows' **Map Network Drive**.\
+You will need to write at line 17 the network address of your network share, and at line 18 your user name. If you're using a network account, you might have to specify your domain as well.
+Refer to the examples in the screenshot below for the right syntax to use.
 
 Once you're done, save your changes, close the editor, and you can then `right click --> Run with PowerShell` to launch Tierpsy Tracker (no, double-click does not work - this is by design from Microsoft).
 
-![run w/ PS](https://user-images.githubusercontent.com/33106690/127393995-789982dc-e087-4549-b047-c1c88820b52e.png)
+<!-- ![Screenshot (11)](https://user-images.githubusercontent.com/33106690/127777903-bcec1ac2-76d9-4d3e-b28c-cad646d24e40.png)|![run w/ PS](https://user-images.githubusercontent.com/33106690/127393995-789982dc-e087-4549-b047-c1c88820b52e.png) -->
+![launcher](https://user-images.githubusercontent.com/33106690/127779304-c7ff2d4e-a202-45c4-8b22-3278f80bab34.png)|![run w/ PS](https://user-images.githubusercontent.com/33106690/127393995-789982dc-e087-4549-b047-c1c88820b52e.png)
+:---:|:---:
 
 > You _might_ have to allow PowerShell to run scripts first. To do this, open a PowerShell as Administrator\
 > (Windows key, type `PowerShell`, then right click on the best match and `Run as Administrator`)\
@@ -120,7 +136,9 @@ Strictly speaking, you do not need a Launcher, but it automates a few boring act
 3 things:
 - checks if VcXsrv is running, if not it starts it
 - checks if Docker is running, if not it starts it
-- waits for Docker to be up, and starts a Docker container from the Tierpsy image, setting a bunch of parameters needed to run properly.
+- waits for Docker to be up, and starts a Docker container from the Tierpsy image,
+  setting a bunch of parameters needed to run properly
+  (including the instructions to make any local drive or network share visible to Tierpsy).
 
 #### 4. [Alternative] Start Tierpsy Tracker manually
 
@@ -137,8 +155,10 @@ Then start the Docker Desktop app from your Start Menu or Desktop shortcut, wait
 
 Open PowerShell, and run this:
 ```
-docker run -it --rm -e DISPLAY=host.docker.internal:0 -v d:/:/DATA --sysctl net.ipv4.tcp_keepalive_intvl=30 --sysctl net.ipv4.tcp_keepalive_probes=5 --sysctl net.ipv4.tcp_keepalive_time=100 lferiani/tierpsy-tracker
+docker run -it --rm -e DISPLAY=host.docker.internal:0 -v d:/:/DATA/local_drive --sysctl net.ipv4.tcp_keepalive_intvl=30 --sysctl net.ipv4.tcp_keepalive_probes=5 --sysctl net.ipv4.tcp_keepalive_time=100 --hostname tierpsydocker lferiani/tierpsy-tracker
 ```
+
+N.B. the command above will not mount any network shares - look inside the launcher to see how to do that!
 
 
 ### Installation on macOS
