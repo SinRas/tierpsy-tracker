@@ -18,14 +18,15 @@ The processing times for in MacBook Pro (15-inch, 2017) were 04:31 minutes for t
 
 ## Getting Started
 
-Follow the installation [instuctions](INSTALLATION.md) and open a terminal or an Anaconda prompt (Windows) and type:
+Follow the installation [instructions](INSTALLATION.md). If you installed with Docker, run your desktop launcher. If you installed from source, open a terminal or an Anaconda prompt (Windows) and activate the right environment (`conda activate tierpsy`).
+Then type, either in the docker terminal or your machine's terminal or prompt:
 ```bash
 tierpsy_gui
 ```
 
 The main widget should look like the one below:
 
-![TierpsyTrackerConsole](https://cloud.githubusercontent.com/assets/8364368/26624637/64275e1c-45e9-11e7-8bd6-69a386007d89.png)   
+![TierpsyTrackerConsole](https://cloud.githubusercontent.com/assets/8364368/26624637/64275e1c-45e9-11e7-8bd6-69a386007d89.png)
 
 ## Set Parameters
 
@@ -35,11 +36,11 @@ The most commonly adjusted parameter is the `Threshold`. If you have dark worms 
 
 If the objects to track are lighter than the background (e.g. if you are tracking fluorescent objects or using dark field illumination), un-check `Is Light Background?`.  In this case, pixels that are above the threshold value will be included in the mask.
 
-![SetParameters](https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif)  
+![SetParameters](https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif)
 
 In some cases, even after adjusting the threshold there still remain large regions of background. If the tracked objects significatively change position during the movie you can enable the background subtraction as shown below. This method will consider anything that does not change within the specified frame range as background.  However, if any of your animals are immobile during the entire frame range will be lost.
 
-![SetBgndSubt](https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif)  
+![SetBgndSubt](https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif)
 
 Other important parameters to set are:
 
@@ -120,14 +121,14 @@ Some extra options:
 
 The same functions are accesible using the command line. You can see the available option by typing in the main tierpsy directory:
 ```
-python cmd_scripts/processMultipleFiles.py -h
+tierpsy_process --help
 ```
 
 ## Tierpsy Tracker Viewer
 
 This widget is used to visualize the tracking results. You can move to a specific frame, zoom in/out, select specific trajectories, and visualize the skeletons overlayed on the compressed video, the trajectory paths or saved [unmasked frames](OUTPUTS.md#full_data). See below for an example on how to use it.
 
-![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)  
+![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)
 
 ### Manually Joining Trajectories
 
