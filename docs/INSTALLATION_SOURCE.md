@@ -1,4 +1,4 @@
-## Installation from source
+# Installation from source
 
 > This is the preferred installation method if you want to have constant updates and/or contribute to Tierpsy's development.
 

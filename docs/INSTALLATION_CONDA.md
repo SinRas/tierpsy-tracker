@@ -1,4 +1,4 @@
-## Installation with conda [deprecated]
+# Installation with conda [deprecated]
 
 > This method will install a discontinued version of Tierpsy Tracker (1.5.1).
 > Unless you really need this version, we'd recommend installing Tierpsy Tracker
