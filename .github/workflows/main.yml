@@ -26,7 +26,7 @@ jobs:
         run: |
           if [[ -z $RELEASE_TAG ]]
           then
-          tagname=$(python -c "from tierpsy.version import __version__; print(__version__)")
+          tagname=$(python -c "from tierpsy.version import __version__; print(__version__.replace('+', '_'))")
           else
           tagname=$RELEASE_TAG
           fi
