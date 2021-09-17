@@ -18,22 +18,25 @@ jobs:
       DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       RELEASE_TAG: ${{ github.event.release.tag_name }}
-      REPO_NAME: tierpsy_tracker
+      REPO_NAME: tierpsy-tracker
     steps:
       - name: check out repo code
         uses: actions/checkout@v2
       - name: docker login, build, tag, and push
         run: |
-          echo $tagname
+          if [[ -z $RELEASE_TAG ]]
+          then
+          tagname=$(python -c "from tierpsy.version import __version__; print(__version__)")
+          else
+          tagname=$RELEASE_TAG
+          fi
+          echo "${tagname}"
           echo $DOCKER_USER/$REPO_NAME:"${tagname}"
           docker login -u $DOCKER_USER -p $DOCKER_TOKEN
           docker build -t $REPO_NAME . -f docker/Dockerfile
-          docker tag $REPO_NAME $DOCKER_USER/$REPO_NAME
-          docker push $DOCKER_USER/$REPO_NAME
-          if [[ -z $RELEASE_TAG ]]
-          then
-          docker tag $REPO_NAME $DOCKER_USER/$REPO_NAME:$RELEASE_TAG
-          docker push $DOCKER_USER/$REPO_NAME:$RELEASE_TAG
-          fi
+          docker tag $REPO_NAME $DOCKER_USER/$REPO_NAME:latest
+          docker push $DOCKER_USER/$REPO_NAME:latest
+          docker tag $REPO_NAME $DOCKER_USER/$REPO_NAME:"${tagname}"
+          docker push $DOCKER_USER/$REPO_NAME:"${tagname}"
 
 
