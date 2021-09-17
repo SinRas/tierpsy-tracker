@@ -15,12 +15,12 @@ docker build -t tierpsy-tracker . -f docker/Dockerfile
 ### Tag:
 ``` bash
 docker tag tierpsy-tracker tierpsy/tierpsy-tracker
-docker tag tierpsy-tracker tierpsy/tierpsy-tracker:1.5.2
 ```
-The one without tag defaults to `:latest`.
+Without specifying a tag, this is the same as adding `:latest`.
+To manually pick a tag, e.g. 1.5.2, use
+`docker tag tierpsy-tracker tierpsy/tierpsy-tracker:1.5.2`
 
 ### Publish
 ``` bash
 docker push tierpsy/tierpsy-tracker
-docker push tierpsy/tierpsy-tracker:1.5.2
 ```

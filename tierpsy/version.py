@@ -1,5 +1,5 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.5.2'
+__version__ = '1.5.3a'
 
 try:
     import os
@@ -14,6 +14,9 @@ except Exception:
     pass
 
 '''
+
+1.5.3alpha
+- Docker workflow for easy image building
 
 1.5.2
 - Bug fixes:
