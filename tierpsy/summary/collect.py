@@ -313,7 +313,6 @@ def _calculate_summaries_one_video(
         # get the name of filenames_summary and features_summary for this window
         f1 = fnames_files[iwin]
         f2 = featsum_files[iwin]
-        print(f1, f2)
 
         try:
             # add the file_id column, and sort the columns.
