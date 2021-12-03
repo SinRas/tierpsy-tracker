@@ -4,6 +4,16 @@ List of default values and description of the tierpsy.gui.Summarizer
 
 from .helper import repack_dflt_list
 
+try:
+    from os import sched_getaffinity
+    _max_n_processes = max(1, len(sched_getaffinity(0))-1)
+except (AttributeError, ImportError):
+    from multiprocessing import cpu_count
+    _max_n_processes = max(1, cpu_count()-1)
+except:
+    _max_n_processes = 1
+
+
 summarizer_valid_options = {
     'feature_type':['openworm','tierpsy'],
     'summary_type' : ['plate', 'trajectory', 'plate_augmented'],
@@ -31,6 +41,16 @@ dflt_args_list = [
         is going to be a data augmentation by randomingly sampling over a subset of the plate trajectories.
         '''
         ),
+    ('n_parallel',
+        1,
+        '''
+        Number of files to be processed in parallel. Not limited in the GUI,
+        but in reality limited by the resources available. Capped to one less
+        than the number of cores available, unless running on PBS or SLURM HPC,
+        in which case no upper cap is set as python does not know the number of
+        cores allocated to it
+        '''
+        ),
     ('is_manual_index',
         False,
         'Set to true to calculate data using manually edited trajectories used Tierpsy Viewer.'
@@ -39,12 +59,12 @@ dflt_args_list = [
         '0:end',
         '''
         Define time windows to get feature summaries from the parts of the video included in each window.
-        Each window must be defined by the start_time and the end_time connected by ':', 
-        for example 'start_time:end_time'. 
-        Different windows must be separated by ',', for example 'start_time_1:end_time_1, start_time_2:end_time_2'. 
-        A sequence of equally sized windows can be defined using the format 'start_time:end_time:step'. 
+        Each window must be defined by the start_time and the end_time connected by ':',
+        for example 'start_time:end_time'.
+        Different windows must be separated by ',', for example 'start_time_1:end_time_1, start_time_2:end_time_2'.
+        A sequence of equally sized windows can be defined using the format 'start_time:end_time:step'.
         A single window can be comprised of several time intervals using the format
-        'start_time1:end_time1 + start_time2:end_time2'. 
+        'start_time1:end_time1 + start_time2:end_time2'.
         ATTENTION: the start_time is included in the window, but the end_time is not included.
         '''
         ),
