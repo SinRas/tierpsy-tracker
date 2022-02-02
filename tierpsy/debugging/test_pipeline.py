@@ -66,15 +66,23 @@ json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio
 # json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/loopbio_rig_pytorch_newsplitFOVspecs_24WP.json'
 
 
-#%%
-rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
-maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
-resultsdir = rootdir + 'Results/' + imgstore_name
+rootdir = '/Users/lferiani/Desktop/Iris/'
+rawvideosdir = rootdir + 'RawVideos/'
+maskedvideosdir = rootdir + 'MaskedVideos/'
+resultsdir = rootdir + 'Results/'
+raw_video = rawvideosdir + 'trimmed_16July_2021_LowPep_OP50_N2_2.wmv'
+json_file = rootdir + '16July_2021_LowPep_OP50_N2_2.json'
+skeletons_file = raw_video.replace('RawVideos', 'Results').replace('.wmv', '_skeletons.hdf5')
 
-raw_video = rawvideosdir + 'metadata.yaml'
-masked_image_file = maskedvideosdir + 'metadata.hdf5'
-features_file = resultsdir + 'metadata_featuresN.hdf5'
-skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
+#%%
+# rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
+# maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
+# resultsdir = rootdir + 'Results/' + imgstore_name
+
+# raw_video = rawvideosdir + 'metadata.yaml'
+# masked_image_file = maskedvideosdir + 'metadata.hdf5'
+# features_file = resultsdir + 'metadata_featuresN.hdf5'
+# skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
 # restore features after previous step before testing
 import shutil
