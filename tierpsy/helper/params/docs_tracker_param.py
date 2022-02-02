@@ -419,7 +419,7 @@ valid_options = {
     'MWP_total_n_wells': [-1, 24, 48, 96], # caveat: whether the analysis will work or not depends on the code in tierpsy.analysis.compress.FOVMultiWellSplitter
     'MWP_whichsideup': ['upright', 'upside-down'],
     'MWP_well_shape': ['circle', 'square'],
-    'MWP_mapping': DFLT_SPLITFOV_PARAMS_FILES + ['custom']
+    'MWP_mapping': DFLT_SPLITFOV_PARAMS_FILES + ['custom', '']
 }
 
 #repack data into dictionaries

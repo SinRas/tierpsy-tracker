@@ -115,9 +115,13 @@ def fix_deprecated_splitFOV_params(param_in_file):
     the deprecated way of specifying parameters is used, convert to the new
     usage (only for 96wp, upright, square wells)
     """
-    if ('MWP_mapping' not in param_in_file) or (
-            not param_in_file['MWP_mapping']):
-        print('Deprecated parameters! Write a json file for splitFOV params')
+    if ('MWP_mapping' not in param_in_file) and any(
+            k in param_in_file for k in deprecated_splitFOV_params):
+        print(
+            'Deprecated MWP parameters!\n'
+            'Write a json file for splitFOV params, or set\n'
+            '"MWP_mapping": ""\n'
+            'in the parameters\' file')
         if all(k in param_in_file for k in deprecated_splitFOV_params):
             if (param_in_file["MWP_total_n_wells"] == 96 and
                     param_in_file["MWP_whichsideup"] == "upright" and
@@ -236,7 +240,7 @@ def parse_splitFOV_params(json_file=''):
 class SplitFOVParams:
 
     def __init__(self, json_file=''):
-        if json_file in DFLT_SPLITFOV_PARAMS_FILES:
+        if json_file and (json_file in DFLT_SPLITFOV_PARAMS_FILES):
             json_file = os.path.join(DFLT_SPLITFOV_PARAMS_PATH, json_file)
 
         self.json_file = json_file
