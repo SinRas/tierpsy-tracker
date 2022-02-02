@@ -211,16 +211,15 @@ class FOVMultiWellsSplitter(object):
         if Path(masked_image_file).exists():
             with tables.File(masked_image_file, 'r') as fid:
                 if '/bgnd' in fid:
-                    self.img = fid.get_node('/bgnd')[0]
+                    self.img = fid.get_node('/bgnd').read(0)[0].copy()
                 else:
                     # maybe bgnd was not in the masked video?
                     # for speed, let's just get the first full frame
-                    self.img = fid.get_node('/full_data')[0]
+                    self.img = fid.get_node('/full_data').read(0)[0].copy()
 
         # initialise the dataframe
         self.wells = pd.DataFrame(columns=WELLS_ATTRIBUTES)
-        with pd.HDFStore(filename, 'r') as fid:
-            wells_table = fid['/fov_wells']
+        wells_table = pd.read_hdf(filename, '/fov_wells')
         for colname in wells_table.columns:
             self.wells[colname] = wells_table[colname]
         self.wells['x'] = 0.5 * (self.wells['x_min'] + self.wells['x_max'])
