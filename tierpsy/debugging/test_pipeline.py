@@ -55,15 +55,15 @@ import subprocess
 # imgstore_name='20200123/microbiome_run1_lb_plate0_20200123_134049.22956805/'
 # json_file = '/Users/lferiani/Desktop/loopbio_rig_96WP_upright_splitFOV_Microbiome_20200110.json'
 
-# rootdir = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/'
-# imgstore_name = '20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/'
-# # json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_pytorch.json'
-# json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_pytorch_newsplitFOVspecs.json'
-
-rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/'
-imgstore_name = 'test_24well_run1_prestim_20220128_163404.22956809/'
+rootdir = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/'
+imgstore_name = '20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/'
 # json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_pytorch.json'
-json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/loopbio_rig_pytorch_newsplitFOVspecs_24WP.json'
+json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_pytorch_newsplitFOVspecs.json'
+
+# rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/'
+# imgstore_name = 'test_24well_run1_prestim_20220128_163404.22956809/'
+# # json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_pytorch.json'
+# json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/loopbio_rig_pytorch_newsplitFOVspecs_24WP.json'
 
 
 #%%

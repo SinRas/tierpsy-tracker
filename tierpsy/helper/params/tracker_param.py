@@ -123,6 +123,10 @@ def fix_deprecated_splitFOV_params(param_in_file):
                     param_in_file["MWP_whichsideup"] == "upright" and
                     param_in_file["MWP_well_shape"] == "square"):
                 param_in_file['MWP_mapping'] = 'HYDRA_96WP_UPRIGHT.json'
+            if (param_in_file["MWP_total_n_wells"] == 24 and
+                    param_in_file["MWP_whichsideup"] == "upright" and
+                    param_in_file["MWP_well_shape"] == "circle"):
+                param_in_file['MWP_mapping'] = 'HYDRA_24WP_UPRIGHT.json'
     # remove deprecated
     for key in deprecated_splitFOV_params:
         if key in param_in_file:

@@ -7,6 +7,7 @@ Created on Fri Jun 25 17:17:38 2021
 """
 
 import tqdm
+import shutil
 from pathlib import Path
 from matplotlib import pyplot as plt
 
@@ -23,13 +24,13 @@ def test_from_raw():
     # where are things
     wd = Path('~/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/').expanduser()
     raw_fname = (
-        wd / 'RawVideos' / '_20191205' /
+        wd / 'RawVideos' / '20191205' /
         'syngenta_screen_run1_bluelight_20191205_151104.22956805' /
         'metadata.yaml'
         )
     masked_fname = Path(
         str(raw_fname)
-        .replace('RawVideos',  'MaskedVideos')
+        .replace('RawVideos',  'MaskedVideos_')
         .replace('.yaml',  '.hdf5')
         )
 
@@ -62,6 +63,7 @@ def test_from_raw():
     with open(masked_fname, 'w') as fid:
         pass
     fovsplitter.write_fov_wells_to_file(masked_fname)
+    shutil.rmtree(masked_fname.parent)
 
     return
 

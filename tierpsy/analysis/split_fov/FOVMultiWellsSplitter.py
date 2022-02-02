@@ -170,12 +170,14 @@ class FOVMultiWellsSplitter(object):
             self.remove_half_circles()
             self.find_row_col_wells()
             self.fill_lattice_defects()
+            self.check_wells_grid_shape()
             self.find_wells_boundaries()
             self.calculate_wells_dimensions()
         elif self.well_shape == 'square':
             self.find_wells_on_grid()
             self.calculate_wells_dimensions()
             self.find_row_col_wells()
+            self.check_wells_grid_shape()
         self.name_wells()
 
     def constructor_from_fov_wells(self, filename):
@@ -475,6 +477,9 @@ class FOVMultiWellsSplitter(object):
             # assign label array to right dimension
             self.wells[lp] = d_ind.astype(int)
 
+        return
+
+    def check_wells_grid_shape(self):
         # check results (unless this is from an old masked videos fov_wells)
         # in which case it's fine
         if hasattr(self, 'n_wells_in_fov'):
@@ -491,7 +496,7 @@ class FOVMultiWellsSplitter(object):
         return
 
 
-    def remove_half_circles(self, max_radius_portion_missing=0.5):
+    def remove_half_circles(self, max_radius_portion_missing=0.7):
         """
         Only keep circles whose centre is at least
         (1-max_radius_portion_missing)*radius away
@@ -509,6 +514,7 @@ class FOVMultiWellsSplitter(object):
                             (self.wells['x'] + extra_space >= self.img_shape[1]) | \
                             (self.wells['y'] - extra_space < 0) | \
                             (self.wells['y'] + extra_space >= self.img_shape[0])
+
         # remove entries that did not satisfy the initial requests
         self.wells.drop(self.wells[idx_bad_circles].index, inplace=True)
         return
@@ -583,9 +589,9 @@ class FOVMultiWellsSplitter(object):
         for rr,cc in missing_rowcols:
             new_well = {}
             # calculate x,y,r
-            y = self.wells[self.wells['row'] == rr]['y'].median()
-            x = self.wells[self.wells['col'] == cc]['x'].median()
-            r = self.wells['r'].mean()
+            y = self.wells[self.wells['row'] == rr]['y'].median().astype(int)
+            x = self.wells[self.wells['col'] == cc]['x'].median().astype(int)
+            r = self.wells['r'].mean().astype(int)
             # append to temporary dict
             new_well['x'] = [x,]
             new_well['y'] = [y,]
@@ -949,7 +955,7 @@ if __name__ == '__main__':
     splitfov_params = SplitFOVParams(json_file=json_fname)
     shape, edge_frac, sz_mm = splitfov_params.get_common_params()
     px2um = 12.4
-
+    # %%
     for raw_fname, masked_fname in zip(raw_fnames, masked_fnames):
 
         masked_fname.parent.mkdir(exist_ok=True, parents=True)
