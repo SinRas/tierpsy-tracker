@@ -420,6 +420,9 @@ class FOVMultiWellsSplitter(object):
         self.wells['x'] = _circles[:, 0].astype(int)
         self.wells['y'] = _circles[:, 1].astype(int)
         self.wells['r'] = _circles[:, 2].astype(int)
+        # take the decision to use the median radius.
+        # no reason for wells to have different radii
+        self.wells['r'] = self.wells['r'].median().astype(int)
         return
 
 
@@ -841,10 +844,55 @@ class FOVMultiWellsSplitter(object):
 
     def create_mask_wells(self):
         """
-        Create a black mask covering a 10% thick edge of the square region covering each well
+        create_mask_wells create a black mask covering the space between wells
+        and/or a user-defined region at the edges of each well. Can be used
+        on square and circular wells
+
+        Returns
+        -------
+        mask [np.ndarray]
+            mask of 0 and 1s, to multiply or bitwise_and to an image to
+            delete unwanted regions
         """
+
         assert self.well_masked_edge < 0.5, \
             "well_masked_edge has to be less than 50% or no data left"
+
+        if self.well_shape == 'square':
+            mask = self._create_mask_wells_square()
+        elif self.well_shape == 'circle':
+            mask = self._create_mask_wells_circle()
+        else:
+            raise Exception('call to create_mask_wells without a well shape')
+        return mask
+
+
+    def _create_mask_wells_circle(self):
+        """
+        create_mask_wells_circle Create a black mask covering the space between
+        round wells, and however much inside the detected circular shape
+        as defined by well_masked_edge
+        """
+        # start with empty mask, fill it up with circles as found by the algo.
+        mask = np.zeros(self.img_shape).astype(np.uint8)
+        draw_radius = self.wells['r'].median() * (1 - self.well_masked_edge)
+        draw_radius = int(draw_radius)
+        centres = self.wells[['x', 'y']].values
+        for point in centres:
+            # draw the outer circle
+            cv2.circle(mask,tuple(point), draw_radius, 255, -1)
+        # bring down to [0, 1] range for multiplying later
+        mask = mask // 255
+        return mask
+
+
+
+    def _create_mask_wells_square(self):
+        """
+        Create a black mask covering a thick edge of the square region covering
+        each well. Thickness specified by well_masked_edge
+        """
+
 
         mask = np.ones(self.img_shape).astype(np.uint8)
         # average size of wells
@@ -988,6 +1036,10 @@ if __name__ == '__main__':
         with open(masked_fname, 'w') as fid:
             pass
         fovsplitter.write_fov_wells_to_file(masked_fname)
+
+        fovsplitter.apply_wells_mask(img)
+        plt.imshow(img)
+
 
     # %%
     # test from masked video with new /fov_wells

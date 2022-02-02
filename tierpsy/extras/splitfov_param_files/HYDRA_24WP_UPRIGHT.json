@@ -1,7 +1,7 @@
 {
     "MWP_well_shape" : "circle",
-    "MWP_well_size_mm" : 18,
-    "MWP_well_masked_edge": 0,
+    "MWP_well_size_mm" : 16,
+    "MWP_well_masked_edge": 0.1,
     "MWP_camera2channelrig": {
         "22956818": ["Ch1", "Hydra01"],
         "22956816": ["Ch2", "Hydra01"],
