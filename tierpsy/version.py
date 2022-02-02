@@ -18,6 +18,9 @@ except Exception:
 1.5.3alpha
 - Docker workflow for easy image building
 - Summaries can be parallelised
+- Support for multiwell videos (multiple wells imaged by the same camera) with
+  field-of-view splitting parameters supplied in a json file and support to
+  custom FOV splitting json files
 - Bug fixes:
   * getFoodContourMorph: fixed bug in catching the output of cv2.findContours
 
