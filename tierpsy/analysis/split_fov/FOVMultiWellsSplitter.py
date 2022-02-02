@@ -32,7 +32,7 @@ from tierpsy.analysis.split_fov.helper import WELLS_ATTRIBUTES
 from tierpsy.analysis.split_fov.helper import make_square_template
 from tierpsy.analysis.split_fov.helper import simulate_wells_lattice
 from tierpsy.analysis.split_fov.helper import get_bgnd_from_masked
-from tierpsy.analysis.split_fov.helper import get_mwp_map, serial2channel
+# from tierpsy.analysis.split_fov.helper import get_mwp_map, serial2channel
 from tierpsy.helper.misc import TABLE_FILTERS
 
 
@@ -359,6 +359,7 @@ class FOVMultiWellsSplitter(object):
                 y_offset_px, self.img.shape[0], spacing_px)[:self.n_rows]
             ])
         # write into dataframe
+        self.wells = pd.DataFrame(columns=WELLS_ATTRIBUTES)
         self.wells['x'] = xyr[:, 0].astype(int)  # centre
         self.wells['y'] = xyr[:, 1].astype(int)  # centre
         self.wells['r'] = xyr[:, 2].astype(int)  # half-width
@@ -376,146 +377,10 @@ class FOVMultiWellsSplitter(object):
             self.wells['y_max'], self.img_shape[0])
         # and for debugging
         self._gridminres = (result, meanimg, npixels)  # save output of diff evo
+        self._imgformin = img
         # looked at ~10k FOV splits, 0.6 is a good threshold to at least flag
         # FOV splits that result in too high residual
         self.is_dubious = (result.fun / meanimg / npixels > 0.6)
-
-
-
-    def find_square_wells(self, xcorr_threshold=0.85):
-        """Cross-correlate the frame with a template approximating a square well.
-        Then clean up the results by removing points too close together, or not on a nice grid
-        - xcorr_threshold: how high the value of the cross-correlation between
-            image and template has to be
-        """
-        is_debug = False
-        # Downscale factor for blur_im. was not saved as a property of the class
-        dwnscl_factor = self.img_shape[0]/self.blur_im.shape[0]
-        # How many pixels in a square well, in the downscaled image?
-        if self.n_wells == 96:
-            # TODO: make a dictionary global and call it
-            well_size_mm = 8 # roughly, well size of 96wp square wells. Maybe have it as input?
-            well_size_px = well_size_mm*1000/self.microns_per_pixel/dwnscl_factor
-        else:
-            raise Exception("This case hasn't been coded for yet")
-
-        # make square template approximating a well
-        template = make_square_template(n_pxls=well_size_px,
-                                        rel_width=0.7,
-                                        blurring=0.1,
-                                        dtype_out='uint8')
-
-        # find template in image: cross correlation, then threshold and segment
-        res = cv2.matchTemplate(self.blur_im, template, cv2.TM_CCORR_NORMED)
-        # find local maxima that are at least well_size_px apart
-        X=peak_local_max(res, min_distance=well_size_px//2,
-                         indices=True,
-                         exclude_border=False,
-                         threshold_abs=xcorr_threshold)
-        xcorr_peaks = np.array( [res[r, c] for r,c in X] )
-        print('Initially found {} wells. Removing the ones too close'.format(xcorr_peaks.shape[0]))
-
-        # a bug in peak_local_max means that min_distance is sometimes overlooked.
-        # https://github.com/scikit-image/scikit-image/issues/4048
-        # seems to be only a problem with peaks with distance == 1
-        # adding my own proximity removal system, keeps the highest xcorr point
-        # of the conflicting ones
-
-        # create matrix of distances, using implicit expansion
-        pkdist2 = (X[:,[0,]] - X[:,0])**2 \
-                + (X[:,[1,]] - X[:,1])**2 # column - row makes a matrix, **2 squares it element-wise
-        # look for peaks closest than threshold (same as given before)
-        dist2_thresh = (well_size_px//2)**2
-        pkstooclose = pkdist2 <= dist2_thresh
-        # look in upper-diag matrix only
-        pkstooclose = np.triu(pkstooclose, k=0) # makes a upper-triangular matrix, keeps diag (k=0), and putls lower-triangular to 0
-
-        # loop on the peaks (rows)
-        idx_to_remove = np.zeros(X.shape[0], dtype=bool)
-        for ind, row in enumerate(pkstooclose):
-            if sum(row) == 1: # only hit was on the diagonal
-                continue
-            print('more than one hit')
-            # more than one proximity hit
-            # find xcorr values and position in the list
-            pks = xcorr_peaks[row]
-            print(pks)
-            inds = np.argwhere(row)
-            print(inds)
-            # find where the highest peak is in the short selection of conflicting points
-            ind_max_pk = inds[np.argmax(pks)]
-            print(ind_max_pk)
-            # store that we need to remove the conflicting points that are not the max peak
-            inds_to_remove = np.setdiff1d(inds, ind_max_pk)
-            idx_to_remove[inds_to_remove] = True
-        # now remove the offending points from X and xcorr_peaks
-        X = X[~idx_to_remove]
-        xcorr_peaks = xcorr_peaks[~idx_to_remove]
-        print('Found {} wells'.format(xcorr_peaks.shape[0]))
-
-
-
-        if is_debug:
-            plt.figure()
-            ax = plt.axes()
-            hi = ax.imshow(res)
-            plt.axis('off')
-            plt.colorbar(hi, ax=ax, fraction=0.03378, pad=0.01)
-            plt.tight_layout()
-            plt.plot(X[:,1],X[:,0],'ro', mfc='none')
-            fig, axs = plt.subplots(1,2, figsize=(12.8, 4.8))
-            axs[0].imshow(self.img, cmap='gray')
-            axs[1].imshow(res)
-            axs[1].plot(X[:,1], X[:,0], 'ro', mfc='none')
-
-        #NOTE: X contains row and column (y and x) of corner of template matching,
-        # and are values within res.shape.
-        # To get the centre, add half the template size.
-        # This is to be done at the end, to avoid out-of-bound problems in res
-
-        # now get rid of points not nicely on a grid.
-
-        # first get a good estimate of the lattice parameter
-        # points on a grid will always have 2 neighbours at
-        # distance=lattice spacing
-        nbrs = NearestNeighbors(n_neighbors=3, algorithm='auto').fit(X)
-        distances, _ = nbrs.kneighbors(X)
-        distances = distances[:,1:]         # throw away the column of zeros (dist from itself)
-        lattice_dist = np.median(distances) # this is average lattice spacing
-        delta = lattice_dist/10             # this is "grace" interval
-        # now look for wells not aligned along the x or y:
-        # samecoord is N-by-N matrix. Element [i,j] is true when
-        # the coordinate of well i and well j is (roughly) the same
-        alonealongcoord = np.zeros(X.shape)
-        for i in [0,1]: # dimension counter: y and x
-            samecoord = abs(X[:,[i,]] - X[:,i]) < delta
-            if is_debug: print(samecoord.astype(int))
-            alonealongcoord[:,i] =  samecoord.sum(axis=1)==1
-            if is_debug: print(alonealongcoord)
-        # a point is not on a grid if it doesn't share its x or y coordinates
-        # with at least another point
-        idx_not_on_grid = alonealongcoord.any(axis=1)
-        if is_debug: print(idx_not_on_grid)
-        # apply the filtering
-        X = X[~idx_not_on_grid]
-        xcorr_peaks = xcorr_peaks[~idx_not_on_grid]
-        if is_debug: print(X)
-
-        if is_debug:
-            axs[1].plot(X[:,1], X[:,0], 'rx')
-            ax.plot(X[:,1], X[:,0], 'rx')
-
-        # write in self.wells
-        X = X * dwnscl_factor
-        well_size_px *= dwnscl_factor
-        self.wells['y'] = X[:,0] + well_size_px/2
-        self.wells['x'] = X[:,1] + well_size_px/2
-        self.wells['r'] = well_size_px/2
-
-        if is_debug:
-            axs[0].plot(self.wells['x'], self.wells['y'], 'rx')
-
-        return
 
 
     def find_circular_wells(self):
@@ -527,29 +392,33 @@ class FOVMultiWellsSplitter(object):
 
         # find circles
         # parameters in downscaled units
-        circle_goodness = 70;
-        highest_canny_thresh = 10;
-        min_well_dist = self.blur_im.shape[1]/3;    # max 3 wells along short side. bank on FOV not taking in all the entirety of the well
-        min_well_radius = self.blur_im.shape[1]//7; # if 48WP 3 wells on short side ==> radius <= side/6
-        max_well_radius = self.blur_im.shape[1]//4; # if 24WP 2 wells on short side. COnsidering intrawells space, radius <= side/4
+        circle_goodness = 70
+        highest_canny_thresh = 10
+        min_well_dist = .9 * (self.blur_im.shape[1] / self.n_rows)
+        expected_radius = (self.well_size_px / 2) / dwnscl_factor
+        min_well_radius = int(np.round(0.9 * expected_radius))
+        max_well_radius = int(np.round(1.1 * expected_radius))
+        # min_well_radius = self.blur_im.shape[1]//7; # if 48WP 3 wells on short side ==> radius <= side/6
+        # max_well_radius = self.blur_im.shape[1]//4; # if 24WP 2 wells on short side. COnsidering intrawells space, radius <= side/4
         # find circles
-        _circles = cv2.HoughCircles(self.blur_im,
-                                   cv2.HOUGH_GRADIENT,
-                                   dp=1,
-                                   minDist=min_well_dist,
-                                   param1=highest_canny_thresh,
-                                   param2=circle_goodness,
-                                   minRadius=min_well_radius,
-                                   maxRadius=max_well_radius)
-        _circles = np.squeeze(_circles); # because why the hell is there an empty dimension at the beginning?
+        _circles = cv2.HoughCircles(
+            self.blur_im,
+            cv2.HOUGH_GRADIENT,
+            dp=1,
+            minDist=min_well_dist,
+            param1=highest_canny_thresh,
+            param2=circle_goodness,
+            minRadius=min_well_radius,
+            maxRadius=max_well_radius)
+        _circles = np.squeeze(_circles)  # remove empty dimension
 
         # convert back to pixels
-        _circles *= dwnscl_factor;
+        _circles *= dwnscl_factor
 
         # output back into class property
-        self.wells['x'] = _circles[:,0].astype(int)
-        self.wells['y'] = _circles[:,1].astype(int)
-        self.wells['r'] = _circles[:,2].astype(int)
+        self.wells['x'] = _circles[:, 0].astype(int)
+        self.wells['y'] = _circles[:, 1].astype(int)
+        self.wells['r'] = _circles[:, 2].astype(int)
         return
 
 
@@ -1059,58 +928,61 @@ if __name__ == '__main__':
     # test from raw/frame (like in COMPRESS)
 
     # where are things
-    wd = Path('~/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/').expanduser()
-    raw_fname = (
-        wd / 'RawVideos' / '_20191205' /
-        'syngenta_screen_run1_bluelight_20191205_151104.22956805' /
-        'metadata.yaml'
-        )
-    masked_fname = Path(
-        str(raw_fname)
-        .replace('RawVideos',  'MaskedVideos')
-        .replace('.yaml',  '.hdf5')
-        )
-    masked_fname.parent.mkdir(parents=True, exist_ok=True)
+    # wd = Path('~/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/').expanduser()
+    # raw_fname = (
+    #     wd / 'RawVideos' / '_20191205' /
+    #     'syngenta_screen_run1_bluelight_20191205_151104.22956805' /
+    #     'metadata.yaml'
+    #     )
+    wd = Path('~/Desktop/Data_FOVsplitter/24WP/').expanduser()
+    raw_fnames = list((wd / 'RawVideos').rglob('metadata.yaml'))
+    masked_fnames = [(
+        str(f).replace('RawVideos',  'MaskedVideos')
+        .replace('.yaml',  '.hdf5')) for f in raw_fnames]
+    masked_fnames = [Path(f) for f in masked_fnames]
 
-    features_fname = Path(
-        str(masked_fname)
-        .replace('MaskedVideos','Results')
-        .replace('.hdf5','_featuresN.hdf5')
-        )
+    (wd / 'MaskedVideos').mkdir(parents=True, exist_ok=True)
 
-    json_fname = Path(DFLT_SPLITFOV_PARAMS_PATH) / DFLT_SPLITFOV_PARAMS_FILES[0]
-
-    if masked_fname.exists():
-        masked_fname.unlink()
-    if features_fname.exists():
-        features_fname.unlink()
-
+    # common parameters
+    json_fname = Path(DFLT_SPLITFOV_PARAMS_PATH) / 'HYDRA_24WP_UPRIGHT.json'
+    # json_fname = Path(DFLT_SPLITFOV_PARAMS_PATH) / 'HYDRA_96WP_UPRIGHT.json'
     splitfov_params = SplitFOVParams(json_file=json_fname)
     shape, edge_frac, sz_mm = splitfov_params.get_common_params()
-    uid, rig, ch, mwp_map = splitfov_params.get_params_from_filename(
-        masked_fname)
     px2um = 12.4
 
-    # read image
-    vid = selectVideoReader(str(raw_fname))
-    status, img = vid.read_frame(0)
+    for raw_fname, masked_fname in zip(raw_fnames, masked_fnames):
 
-    fovsplitter = FOVMultiWellsSplitter(
-        img,
-        microns_per_pixel=px2um,
-        well_shape=shape,
-        well_size_mm=sz_mm,
-        well_masked_edge=edge_frac,
-        camera_serial=uid,
-        rig=rig,
-        channel=ch,
-        wells_map=mwp_map)
-    fig = fovsplitter.plot_wells()
-    fig.savefig(wd / 'foo.png')
+        masked_fname.parent.mkdir(exist_ok=True, parents=True)
+        if masked_fname.exists():
+            masked_fname.unlink()
 
-    with open(masked_fname, 'w') as fid:
-        pass
-    fovsplitter.write_fov_wells_to_file(masked_fname)
+
+        uid, rig, ch, mwp_map = splitfov_params.get_params_from_filename(
+            masked_fname)
+
+        # read image
+        vid = selectVideoReader(str(raw_fname))
+        status, img = vid.read_frame(0)
+
+        fovsplitter = FOVMultiWellsSplitter(
+            img,
+            microns_per_pixel=px2um,
+            well_shape=shape,
+            well_size_mm=sz_mm,
+            well_masked_edge=edge_frac,
+            camera_serial=uid,
+            rig=rig,
+            channel=ch,
+            wells_map=mwp_map)
+
+        fig = fovsplitter.plot_wells()
+        fig.savefig(wd / (raw_fname.parent.name + '_default.png'))
+
+        wells_df = fovsplitter.get_wells_data()
+
+        with open(masked_fname, 'w') as fid:
+            pass
+        fovsplitter.write_fov_wells_to_file(masked_fname)
 
     # %%
     # test from masked video with new /fov_wells

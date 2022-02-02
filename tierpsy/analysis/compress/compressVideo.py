@@ -15,7 +15,6 @@ from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.params import compress_defaults, set_unit_conversions
 from tierpsy.helper.params.tracker_param import SplitFOVParams
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
-from tierpsy.analysis.split_fov.helper import parse_camera_serial
 from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
 
 

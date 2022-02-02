@@ -259,7 +259,7 @@ def make_square_template(
 
 
 def make_circular_template(
-        n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='float'):
+        n_pxls=150, rel_width=0.7, blurring=0.2, dtype_out='float'):
     import numpy as np
     """Function that creates a template that approximates a circular well"""
     n_pxls = int(np.round(n_pxls))
@@ -273,7 +273,7 @@ def make_circular_template(
 
     # add bright border
     foo = rr > (0.5 * rel_width + 0.08)
-    print(foo.mean())
+    # print(foo.mean())
     zz[foo] = 1
 
     if dtype_out == 'uint8':
@@ -286,24 +286,6 @@ def make_circular_template(
 
     return zz
 
-# def was_fov_split(timeseries_data):
-#     """
-#     Check if the FOV was split, looking at timeseries_data
-#     """
-#     if 'well_name' not in timeseries_data.columns:
-#         # for some weird reason, save_feats_stats is being called on an old
-#         # featuresN file without calling save_timeseries_feats_table first
-#         is_fov_split = False
-#     else:
-#         # timeseries_data has been updated and now has a well_name column
-#         if len(set(timeseries_data['well_name']) - set(['n/a'])) > 0:
-#             is_fov_split = True
-# #            print('have to split fov by well')
-#         else:
-#             assert all(timeseries_data['well_name']=='n/a'), \
-#                 'Something is wrong with well naming - go check save_feats_stats'
-#             is_fov_split = False
-#     return is_fov_split
 
 def was_fov_split(fname):
     with pd.HDFStore(fname, 'r') as fid:
