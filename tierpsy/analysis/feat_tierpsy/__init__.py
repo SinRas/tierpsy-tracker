@@ -17,7 +17,7 @@ def args_(fn, param):
           'argkws': {
                     'features_file': fn['featuresN'],
                     'derivate_delta_time': param.p_dict['feat_derivate_delta_time'],
-                    'fovsplitter_json_path': splitfov_json_path
+                    'splitfov_json_path': splitfov_json_path
                     },
           'input_files' : [fn['featuresN']],
           'output_files': [fn['featuresN']],

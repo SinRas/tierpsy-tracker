@@ -226,8 +226,7 @@ def get_tierpsy_features(features_file, derivate_delta_time = 1/3, splitfov_json
 
 if __name__ == '__main__':
 
-    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
-
+    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/Results/test_24well_run1_prestim_20220128_165153.22594548/metadata'
     features_file = base_file + '_featuresN.hdf5'
 
     # restore features after previous step before testing

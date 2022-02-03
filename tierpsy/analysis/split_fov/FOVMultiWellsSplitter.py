@@ -226,6 +226,8 @@ class FOVMultiWellsSplitter(object):
         self.wells['x'] = 0.5 * (self.wells['x_min'] + self.wells['x_max'])
         self.wells['y'] = 0.5 * (self.wells['y_min'] + self.wells['y_max'])
         self.wells['r'] = self.wells['x_max'] - self.wells['x']
+        for col in ['x', 'y', 'r']:
+            self.wells[col] = self.wells[col].round().astype(int)
 
         self.calculate_wells_dimensions()
         self.find_row_col_wells()
