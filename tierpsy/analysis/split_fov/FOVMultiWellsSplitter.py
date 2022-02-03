@@ -128,6 +128,7 @@ class FOVMultiWellsSplitter(object):
             self.wells_map = wells_map
             self.n_rows, self.n_cols = wells_map.shape
             self.n_wells_in_fov = self.wells_map.size
+            self.is_dubious = None
             # and now the constructor
             self.constructor_from_image(fname_or_img)
 
