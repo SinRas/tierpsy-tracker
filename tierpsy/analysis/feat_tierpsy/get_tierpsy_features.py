@@ -217,9 +217,9 @@ def save_feats_stats(features_file, derivate_delta_time):
 
 
 
-def get_tierpsy_features(features_file, derivate_delta_time = 1/3, fovsplitter_param={}):
+def get_tierpsy_features(features_file, derivate_delta_time = 1/3, splitfov_json_path=''):
     #I am adding this so if I add the parameters to calculate the features i can pass it to this function
-    save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param)
+    save_timeseries_feats_table(features_file, derivate_delta_time, splitfov_json_path)
     save_feats_stats(features_file, derivate_delta_time)
 
 
