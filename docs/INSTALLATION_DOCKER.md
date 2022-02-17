@@ -168,7 +168,7 @@ N.B. the command above will not mount any network shares - look inside the launc
 
 ## Installation on macOS
 
-> This was tested on a MacBook Pro running Mojave. Might not work on machines with an M1 chip.
+> This was tested on a MacBook Pro running Mojave. Does not work on machines with an M1 chip due to [this issue](https://github.com/docker/for-mac/issues/5342) with tensorflow.
 
 ### 1. Install XQuartz
 
