@@ -398,10 +398,10 @@ class FOVMultiWellsSplitter(object):
         # parameters in downscaled units
         circle_goodness = 70
         highest_canny_thresh = 10
-        min_well_dist = .9 * (self.blur_im.shape[1] / self.n_rows)
+        min_well_dist = .9 * (self.blur_im.shape[0] / self.n_rows)
         expected_radius = (self.well_size_px / 2) / dwnscl_factor
-        min_well_radius = int(np.round(0.9 * expected_radius))
-        max_well_radius = int(np.round(1.1 * expected_radius))
+        min_well_radius = int(np.round(0.85 * expected_radius))
+        max_well_radius = int(np.round(1.15 * expected_radius))
         # min_well_radius = self.blur_im.shape[1]//7; # if 48WP 3 wells on short side ==> radius <= side/6
         # max_well_radius = self.blur_im.shape[1]//4; # if 24WP 2 wells on short side. COnsidering intrawells space, radius <= side/4
         # find circles
@@ -990,7 +990,9 @@ if __name__ == '__main__':
     #     'syngenta_screen_run1_bluelight_20191205_151104.22956805' /
     #     'metadata.yaml'
     #     )
-    wd = Path('~/Desktop/Data_FOVsplitter/24WP/').expanduser()
+    wd = Path(
+        '/Volumes/behavgenom$/Tom/Data/Hydra/Ivermectin_food_test/RawData'
+        ).expanduser()
     raw_fnames = list((wd / 'RawVideos').rglob('metadata.yaml'))
     masked_fnames = [(
         str(f).replace('RawVideos',  'MaskedVideos')
@@ -1000,13 +1002,12 @@ if __name__ == '__main__':
     (wd / 'MaskedVideos').mkdir(parents=True, exist_ok=True)
 
     # common parameters
-    json_fname = Path(DFLT_SPLITFOV_PARAMS_PATH) / 'HYDRA_24WP_UPRIGHT.json'
-    # json_fname = Path(DFLT_SPLITFOV_PARAMS_PATH) / 'HYDRA_96WP_UPRIGHT.json'
+    json_fname = Path(DFLT_SPLITFOV_PARAMS_PATH) / 'HYDRA_96WP_ROUND_UPRIGHT.json'
     splitfov_params = SplitFOVParams(json_file=json_fname)
     shape, edge_frac, sz_mm = splitfov_params.get_common_params()
     px2um = 12.4
     # %%
-    for raw_fname, masked_fname in zip(raw_fnames, masked_fnames):
+    for raw_fname, masked_fname in tqdm.tqdm(zip(raw_fnames, masked_fnames)):
 
         masked_fname.parent.mkdir(exist_ok=True, parents=True)
         if masked_fname.exists():
@@ -1033,6 +1034,7 @@ if __name__ == '__main__':
 
         fig = fovsplitter.plot_wells()
         fig.savefig(wd / (raw_fname.parent.name + '_default.png'))
+        plt.close(fig)
 
         wells_df = fovsplitter.get_wells_data()
 
@@ -1040,8 +1042,10 @@ if __name__ == '__main__':
             pass
         fovsplitter.write_fov_wells_to_file(masked_fname)
 
-        fovsplitter.apply_wells_mask(img)
-        plt.imshow(img)
+        # fovsplitter.apply_wells_mask(img)
+        # fig, ax = plt.subplots(figsize=(8, 8*img.shape[0]/img.shape[1]))
+        # ax.set_axis_off()
+        # ax.imshow(img)
 
 
     # %%
