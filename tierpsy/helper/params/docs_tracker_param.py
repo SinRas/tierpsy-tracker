@@ -2,6 +2,7 @@
 List of default values and description of the tracker parameters.
 '''
 
+from tierpsy import DFLT_SPLITFOV_PARAMS_FILES
 from .docs_analysis_points import valid_analysis_types, dlft_analysis_type
 from .helper import repack_dflt_list
 
@@ -343,36 +344,57 @@ dflt_param_list = [
         'If true a pretrained neural network model is going to use in  FOOD_CNT, else it will attempt to use morphological operations to calculate the food contour.'
         ),
 
-    ('MWP_total_n_wells',
-        -1,
+    # ('MWP_total_n_wells',
+    #     -1,
+    #     '''
+    #     Deprecated
+    #     If using a Multi Well Plate so that you have more than one well in your field of view, and you want to analyse each well separately.
+    #     This is the total number of wells in your MWP: 24 if you are using a 24-well plate, 48 fr a 48-well plate, etc.
+    #     If this number is -1, Tierpsy will *not* analyse the wells individually.
+    #     '''),
+    # ('MWP_whichsideup',
+    #     'upright',
+    #     '''
+    #     Deprecated!
+    #     If using a Multi Well Plate:
+    #     was it placed under the microscope upright or upside-down?
+    #     '''
+    #     ),
+    # ('MWP_well_shape',
+    #     'square',
+    #     '''
+    #     If using a Multi Well Plate: is each well a circle or a square?
+    #     '''
+    #     ),
+    ('MWP_mapping',
+        '',
         '''
-        If using a Multi Well Plate so that you have more than one well in your field of view, and you want to analyse each well separately.
-        This is the total number of wells in your MWP: 24 if you are using a 24-well plate, 48 fr a 48-well plate, etc.
-        If this number is -1, Tierpsy will *not* analyse the wells individually.
-        '''),
-    ('MWP_whichsideup',
-        'upright',
+        If using a Multi Well Plate: which json file to use for understanding
+        the mappings between filename -> channel (position on a plate)
+        and channel -> wells disposition?
+        If this field is left empty, Tierpsy will *not* analyse the wells
+        individually.
         '''
-        If using a Multi Well Plate: was it placed under the microscope upright or upside-down?
-        '''
-        ),
-    ('MWP_well_shape',
-        'square',
-        '''
-        If using a Multi Well Plate: is each well a circle or a square?
-        '''
-        ),
-    ('MWP_well_masked_edge',
-        0.1,
-        '''
-        If using a Multi Well Plate: close to the edge of the wells the
-        illumination is pathologically uneven (because of the agar's meniscus).
-        To avoid false positive in the tracking we apply a mask to the video,
-        to suppress the signal close to the edge of the wells.
-        This parameter controls how much, relative to the widht/height of
-        each well, this mask should extend. Upper limit is 0.5 as that would
-        already mask out entirely a well.
-        ''')
+     ),
+    ('MWP_path_to_custom_mapping',
+        '',
+        """
+        Path to a json file with information about FOV splitting.
+        Needs to be modelled after the ones in
+        tierpsy-tracker/tierpsy/extras/splitfov_param_files/
+        """
+     ),
+    # ('MWP_well_masked_edge',
+    #     0.1,
+    #     '''
+    #     If using a Multi Well Plate: close to the edge of the wells the
+    #     illumination is pathologically uneven (because of the agar's meniscus).
+    #     To avoid false positive in the tracking we apply a mask to the video,
+    #     to suppress the signal close to the edge of the wells.
+    #     This parameter controls how much, relative to the widht/height of
+    #     each well, this mask should extend. Upper limit is 0.5 as that would
+    #     already mask out entirely a well.
+    #     ''')
     ]
 
 # #not tested (used for the zebra fish)
@@ -397,6 +419,7 @@ valid_options = {
     'MWP_total_n_wells': [-1, 24, 48, 96], # caveat: whether the analysis will work or not depends on the code in tierpsy.analysis.compress.FOVMultiWellSplitter
     'MWP_whichsideup': ['upright', 'upside-down'],
     'MWP_well_shape': ['circle', 'square'],
+    'MWP_mapping': DFLT_SPLITFOV_PARAMS_FILES + ['custom', '']
 }
 
 #repack data into dictionaries

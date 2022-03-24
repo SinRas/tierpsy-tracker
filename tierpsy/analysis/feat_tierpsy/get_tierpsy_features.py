@@ -18,33 +18,27 @@ from tierpsy.helper.params import read_fps, read_ventral_side
 from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
 from tierpsy.analysis.split_fov.helper import was_fov_split
 
-def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param={}):
+def save_timeseries_feats_table(
+        features_file, derivate_delta_time, splitfov_json_path=''):
     timeseries_features = []
     fps = read_fps(features_file)
 
     # initialise class for splitting fov
-    if len(fovsplitter_param) > 0:
+    if splitfov_json_path:
         is_fov_tosplit = True
-        assert all(key in fovsplitter_param for key in ['total_n_wells', 'whichsideup', 'well_shape'])
-        assert fovsplitter_param['total_n_wells']>0
     else:
         is_fov_tosplit = False
     print('is fov to split?',is_fov_tosplit)
 
-
     if is_fov_tosplit:
         # split fov in wells
-        masked_image_file = features_file.replace('Results','MaskedVideos')
-        masked_image_file = masked_image_file.replace('_featuresN.hdf5','.hdf5')
-#        fovsplitter = FOVMultiWellsSplitter(masked_image_file=masked_image_file,
-#                                            total_n_wells=fovsplitter_param['total_n_wells'],
-#                                            whichsideup=fovsplitter_param['whichsideup'],
-#                                            well_shape=fovsplitter_param['well_shape'])
-        fovsplitter = FOVMultiWellsSplitter(masked_image_file,
-                                            **fovsplitter_param)
+        masked_image_file = features_file.replace(
+            'Results', 'MaskedVideos').replace('_featuresN.hdf5', '.hdf5')
+
+        fovsplitter = FOVMultiWellsSplitter(
+            masked_image_file, splitfov_json_path)
         # store wells data in the features file
         fovsplitter.write_fov_wells_to_file(features_file)
-
 
 
     with pd.HDFStore(features_file, 'r') as fid:
@@ -223,27 +217,29 @@ def save_feats_stats(features_file, derivate_delta_time):
 
 
 
-def get_tierpsy_features(features_file, derivate_delta_time = 1/3, fovsplitter_param={}):
+def get_tierpsy_features(features_file, derivate_delta_time = 1/3, splitfov_json_path=''):
     #I am adding this so if I add the parameters to calculate the features i can pass it to this function
-    save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param)
+    save_timeseries_feats_table(features_file, derivate_delta_time, splitfov_json_path)
     save_feats_stats(features_file, derivate_delta_time)
 
 
 
 if __name__ == '__main__':
 
-    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
-
+    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/24WP/Results/test_24well_run1_prestim_20220128_165153.22594548/metadata'
     features_file = base_file + '_featuresN.hdf5'
 
     # restore features after previous step before testing
+    import os
     import shutil
+    from tierpsy import DFLT_SPLITFOV_PARAMS_PATH
     shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
+    splitfov_json = os.path.join(
+        DFLT_SPLITFOV_PARAMS_PATH, 'HYDRA_94WP_UPRIGHT.json')
 
-    fovsplitter_param = {'total_n_wells':96, 'whichsideup':'upright', 'well_shape':'square'}
     get_tierpsy_features(features_file,
                          derivate_delta_time = 1/3,
-                         fovsplitter_param=fovsplitter_param)
+                         splitfov_json_path=splitfov_json)
 
 
 
