@@ -63,6 +63,39 @@ You can access further parameters by clicking `Edit More Parameters`. The explan
 
 When you are satisfied with the selected parameters select a file name and press `Save Parameters`. The parameters will be saved as a [JSON](http://json.org/) file that can be used in [Batch Processing Multiple Files](#batch-processing-multiple-files). If you need to further modify a parameter you can either use a text editor to change the JSON file directly or reload the file by dragging it into the Set Parameters widget.
 
+### Support for Multiple Wells in the Field of View
+
+Starting from Tierpsy 1.5.3a we've introduced support for videos imaging multiple wells.
+This is triggered by using the parameter `MWP_mapping`, with which the user can choose either a pre-made
+well-mapping configuration (i.e. selecting one of the json files in
+`tierpsy/extras/splitfov_param_files/`), or choose to provide a custom made one.
+
+To provide a custom made well-mapping configuration, the user will need to set
+`MWP_mapping` to `custom` and provide the path to the custom json file in `MWP_path_to_custom_mapping`.
+
+The json mapping file contains the information needed by Tierpsy to find and name wells in the videos it
+processes. `MWP_well_shape` is needed to find either `square` or `circle` wells
+of physical size (in mm) `MWP_well_size_mm` (this is the diameter for round wells).
+As skeletonising worms close to the edge of a well can be complicated, Tierpsy has
+the option of ignoring any worm within `MWP_well_masked_edge` of the edge
+(as a fraction of the well's size).
+
+Having found wells, Tierpsy needs some more information to be able to assign the correct name to each well.
+This is achieved thanks to `MWP_camera2channelrig` and `MWP_channel2well`.
+`MWP_camera2channelrig` is a dictionary where each key is an identifier, that we assume is present
+in the video filename and uniquely identifies the physical camera that recorded the video (e.g. the camera's serial number).
+This identifier is linked to a list of two elements, `[channel, instrument name]`.
+The channel represents the physical position of the camera related to a multiwell plate.
+
+`MWP_channel2well` is another dictionary linking each `channel` to the wells it overlooks,
+in a 2d array that reflects the order with which they appear in the video.
+
+This way of storing the information allows Tierpsy to work with videos taken on
+multiple identical multi-camera imaging systems, like the one we described in our
+[recent paper](https://doi.org/10.1038/s42003-022-03206-1).
+
+
+
 ## Batch Processing Multiple Files
 ![BatchProcessing](https://cloud.githubusercontent.com/assets/8364368/26605347/86ffb1e6-4585-11e7-9835-ffdc0751c67a.png)
 
