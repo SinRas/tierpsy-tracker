@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 from functools import partial
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool, Lock, cpu_count
 
 from tierpsy.helper.misc import TimeCounter, print_flush
 from tierpsy.summary.process_ow import ow_plate_summary, \
@@ -276,7 +276,8 @@ def calculate_summaries(
         # iterrows returning a line counter breaks the partial/parallel, so
         # create silly generator that just discards the counter
         row_looper = (row for _, row in df_files.iterrows())
-        with Pool(n_parallel) as p:
+        # with Pool(n_parallel) as p:
+        with Pool(n_parallel, initializer=init_lock, initargs=(Lock(),)) as p:
             outs = p.imap_unordered(
                 _partial_calculate_summaries_one_video, row_looper)
 
@@ -348,9 +349,10 @@ def _calculate_summaries_one_video(
             # and given window
             # if we haven't written any data in a file, i.e. it only contains
             # comments or it is empty, we need to write the features names too
-            is_write_header = _has_only_comments(f2)
-            with open(f2, 'a') as fid:
-                df.to_csv(fid, header=is_write_header, index=False)
+            with WRITE_LOCK:
+                is_write_header = _has_only_comments(f2)
+                with open(f2, 'a') as fid:
+                    df.to_csv(fid, header=is_write_header, index=False)
 
 
 def _has_only_comments(filepath, comment_character='#'):
@@ -375,6 +377,12 @@ def _has_only_comments(filepath, comment_character='#'):
                 return False
     # got here without finding a non-comment line:
     return True
+
+
+def init_lock(a_lock):
+    global WRITE_LOCK
+    WRITE_LOCK = a_lock
+
 
 # %%
 if __name__ == '__main__':
