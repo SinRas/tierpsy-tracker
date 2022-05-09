@@ -267,6 +267,8 @@ def calculate_summaries(
         )
 
     if n_parallel < 2:
+        # I still have to initialise the write lock
+        init_lock(Lock())
         # just do one at a time, no Pool call to avoid overhead
         for ifile, row in df_files.iterrows():
             _partial_calculate_summaries_one_video(row)
