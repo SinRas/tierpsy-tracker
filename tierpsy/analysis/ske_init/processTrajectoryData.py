@@ -140,7 +140,7 @@ def getSmoothedTraj(trajectories_file,
 
         x = worm_data['coord_x'].values
         y = worm_data['coord_y'].values
-        t = worm_data['frame_number'].values.astype(np.int)
+        t = worm_data['frame_number'].values.astype(np.int64)
         thresh = worm_data['threshold'].values
         area = worm_data['area'].values
 

@@ -54,7 +54,7 @@ def fillbnan(arr):
 
 def nanunwrap(x):
     '''correct for phase change for a vector with nan values     '''
-    x = x.astype(np.float)
+    x = x.astype(float)
 
     bad = np.isnan(x)
     x = fillfnan(x)

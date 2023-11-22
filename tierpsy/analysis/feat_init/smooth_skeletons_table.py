@@ -106,7 +106,7 @@ def _r_fill_trajectories_data(skeletons_file):
             trajectories_data[col] = trajectories_data[col].astype(np.int32)
         elif trajectories_data[col].dtype == np.float64:
             trajectories_data[col] = trajectories_data[col].astype(np.float32)
-        elif trajectories_data[col].dtype == np.bool:
+        elif trajectories_data[col].dtype == np.bool_:
             trajectories_data[col] = trajectories_data[col].astype(np.uint8)
 
     assert set(x for _,x in trajectories_data.dtypes.items()) == \

@@ -152,7 +152,7 @@ def getHeadProvInt(
             return np.nan, np.nan, []
 
         worm_int = fid.get_node(
-            '/straighten_worm_intensity_median')[int_map_id].astype(np.float)
+            '/straighten_worm_intensity_median')[int_map_id].astype(float)
 
     worm_int -= np.median(worm_int, axis=1)[:, np.newaxis]
     # get the median intensity profile

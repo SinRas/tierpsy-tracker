@@ -214,7 +214,7 @@ def _test_plot_cnts_maps(ventral_contour, dorsal_contour):
             if np.any(np.isnan(cnt)):
                 continue
             cc = np.zeros(size_counts, np.float32)
-            cc = cv2.drawContours(cc, [cnt[:, None, :].astype(np.int)], contourIdx=-1, thickness=-1, color=1)
+            cc = cv2.drawContours(cc, [cnt[:, None, :].astype(np.int64)], contourIdx=-1, thickness=-1, color=1)
             counts += cc
         
         plt.figure()
@@ -237,7 +237,7 @@ def _get_path_coverage_feats(timeseries_data, bin_size_microns):
 
     bin_vals = ((path_coords_df - path_coords_df.mean())/bin_size_microns).round()
     try:
-        bin_vals = bin_vals.fillna(method='ffill').fillna(method='bfill').astype(np.int)
+        bin_vals = bin_vals.fillna(method='ffill').fillna(method='bfill').astype(np.int64)
     except ValueError:
         #likely full of nan's return empty
         return {}

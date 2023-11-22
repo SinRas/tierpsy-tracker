@@ -176,7 +176,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                     first_frame = np.where(timestamp==self.trajectories_data['timestamp'].min())[0][0]
                     last_frame = np.where(timestamp==self.trajectories_data['timestamp'].max())[0][0]
 
-                    self.trajectories_data['frame_number'] = np.arange(first_frame, last_frame+1, dtype=np.int)
+                    self.trajectories_data['frame_number'] = np.arange(first_frame, last_frame+1, dtype=np.int64)
                     self.trajectories_data['skeleton_id'] = self.trajectories_data.index
 
                     self.traj_time_grouped = self.trajectories_data.groupby('frame_number')

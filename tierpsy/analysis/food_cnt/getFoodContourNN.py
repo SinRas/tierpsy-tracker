@@ -59,8 +59,8 @@ def _get_sizes(im_size, d4a_size= 24, n_conv_layers=4):
     n_tiles_y = int(np.ceil(im_size[1]/output_size))
 
 
-    txs = np.round(np.linspace(0, im_size[0] - output_size, n_tiles_x)).astype(np.int)
-    tys = np.round(np.linspace(0, im_size[1] - output_size, n_tiles_y)).astype(np.int)
+    txs = np.round(np.linspace(0, im_size[0] - output_size, n_tiles_x)).astype(np.int64)
+    tys = np.round(np.linspace(0, im_size[1] - output_size, n_tiles_y)).astype(np.int64)
 
 
     tile_corners = [(tx, ty) for tx in txs for ty in tys]
@@ -350,7 +350,7 @@ def get_food_contour_nn(mask_file, model, _is_debug=False):
     hull_area = cv2.contourArea(hull)
     cnt_solidity = cv2.contourArea(cnts)/hull_area
 
-    food_cnt = np.squeeze(cnts).astype(np.float)
+    food_cnt = np.squeeze(cnts).astype(float)
     # rescale contour to be the same dimension as the original images
     food_cnt[:, 0] *= original_size[0]/food_prob.shape[0]
     food_cnt[:, 1] *= original_size[1]/food_prob.shape[1]

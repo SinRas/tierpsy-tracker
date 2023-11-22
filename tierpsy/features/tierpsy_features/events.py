@@ -30,7 +30,7 @@ def _get_pulses_indexes(light_on, min_window_size=0, is_pad = True):
 
         light_on = np.pad(light_on, (1,1), 'constant', constant_values = False)
 
-    switches = np.diff(light_on.astype(np.int))
+    switches = np.diff(light_on.astype(np.int64))
     turn_on, = np.where(switches==1)
     turn_off, = np.where(switches==-1)
 

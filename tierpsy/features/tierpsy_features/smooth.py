@@ -73,7 +73,7 @@ def get_group_borders(index_o, pad_val = False):
     
     #add zeros at the edge to consider any block in the edges
     index = np.hstack([pad_val, index_o , pad_val])
-    switches = np.diff(index.astype(np.int))
+    switches = np.diff(index.astype(np.int64))
     turn_on, = np.where(switches==1)
     turn_off, = np.where(switches==-1)
     assert turn_off.size == turn_on.size
@@ -265,7 +265,7 @@ class SmoothedWorm():
         #get indexes of nan's after removing small gaps and interpolating
         bad_filled = _h_fill_small_gaps(bad, self.gap_to_interp)
         f = interp1d(np.arange(bad_filled.size), bad_filled)
-        frames_to_nan = np.ceil(f(frames_to_interpolate)).astype(np.bool)
+        frames_to_nan = np.ceil(f(frames_to_interpolate)).astype(np.bool_)
         assert frames_to_interpolate.size == frames_to_nan.size
         
         #interpolate all the fields

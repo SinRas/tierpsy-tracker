@@ -26,8 +26,8 @@ cdef extern void c_circCurvature_simple(double *points, int numberOfPoints, doub
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def circCurvature(np.ndarray[np.float_t, ndim=2, mode="c"] points not None, \
-double edgeLength, np.ndarray[np.float_t, ndim=1, mode="c"] chainCodeLengths = np.zeros(1)):
+def circCurvature(np.ndarray[np.float64_t, ndim=2, mode="c"] points not None, \
+double edgeLength, np.ndarray[np.float64_t, ndim=1, mode="c"] chainCodeLengths = np.zeros(1)):
     """
     multiply (arr, value)
 
@@ -38,7 +38,7 @@ double edgeLength, np.ndarray[np.float_t, ndim=1, mode="c"] chainCodeLengths = n
 
     """
     cdef int numberOfPoints = points.shape[0]
-    cdef np.ndarray[np.float_t, ndim=1, mode="c"] angles = np.zeros(numberOfPoints)
+    cdef np.ndarray[np.float64_t, ndim=1, mode="c"] angles = np.zeros(numberOfPoints)
     
     
     if chainCodeLengths.size == numberOfPoints:

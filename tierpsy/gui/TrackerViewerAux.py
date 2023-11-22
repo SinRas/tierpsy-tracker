@@ -69,7 +69,7 @@ def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel, stag
 
             if stage_position_pix is not None:
                 #subtract stage motion if necessary
-                ss = stage_position_pix[new_data['frame_number'].astype(np.int)]
+                ss = stage_position_pix[new_data['frame_number'].astype(np.int64)]
                 new_data['coord_x'] -= ss[:, 0]
                 new_data['coord_y'] -= ss[:, 1]
 

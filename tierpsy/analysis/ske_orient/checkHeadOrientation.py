@@ -88,7 +88,7 @@ def getBlocksIDs(invalid, max_gap_allowed):
             block_ind[ii + 1] = block_ind[ii]
         else:
             block_ind[ii + 1] = block_ind[ii] + 1
-    block_ids = np.zeros(invalid.size, dtype=np.int)
+    block_ids = np.zeros(invalid.size, dtype=np.int64)
 
     tot_blocks = block_ind[-1]
     block_ids[good_ind] = block_ind

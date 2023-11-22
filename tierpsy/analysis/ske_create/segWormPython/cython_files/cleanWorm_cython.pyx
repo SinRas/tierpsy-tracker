@@ -64,8 +64,8 @@ cdef extremaPeaksCircDist_(bint is_min, np.ndarray[np.float64_t, ndim=1] x, floa
         bint isExtrema;
         int numberOfPoints = x.size;
         int lastIndexChain = numberOfPoints - 1;
-        np.ndarray[np.float_t, ndim=1]  peaks = np.zeros(numberOfPoints, dtype = np.float);
-        np.ndarray[np.int_t, ndim=1] indices = np.zeros(numberOfPoints, dtype = np.int)
+        np.ndarray[np.float64_t, ndim=1]  peaks = np.zeros(numberOfPoints, dtype = float);
+        np.ndarray[np.int64_t, ndim=1] indices = np.zeros(numberOfPoints, dtype = np.int64)
     
     while (i < numberOfPoints):
         #//% Found a potential peak.
@@ -166,7 +166,7 @@ cdef inline double absDiff(double a, double b):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def removeSmallSegments(np.ndarray[np.float_t, ndim=2] contour):
+def removeSmallSegments(np.ndarray[np.float64_t, ndim=2] contour):
     '''% Remove small overlapping segments and anti alias the contour.
     % Note: we don't remove loops. Removing loops may, for example, incorrectly
     % clean up a collapsed contour and/or remove a tail whip thereby leading to
@@ -247,7 +247,7 @@ def removeSmallSegments(np.ndarray[np.float_t, ndim=2] contour):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def cleanContour(np.ndarray[np.float_t, ndim=2] contour):
+def cleanContour(np.ndarray[np.float64_t, ndim=2] contour):
     '''%CLEANCONTOUR Clean an 8-connected, circularly-connected contour by
     %removing any duplicate points and interpolating any missing points.
     %
@@ -266,7 +266,7 @@ def cleanContour(np.ndarray[np.float_t, ndim=2] contour):
     % notices on any copies of the Software.'''
     #%%
     #% Construct the cleaned contour.
-    cdef np.ndarray[np.float_t, ndim=2] cContour = np.zeros_like(contour);
+    cdef np.ndarray[np.float64_t, ndim=2] cContour = np.zeros_like(contour);
     cdef int last_index_contour = contour.shape[0]-1;
     cdef int i, j = 0;
     cdef double x, y, x1, x2, y1, y2

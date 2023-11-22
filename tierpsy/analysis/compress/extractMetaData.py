@@ -146,7 +146,7 @@ def store_meta_data(video_file, masked_image_file):
 
 
 def _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
-    timestamp = best_effort_timestamp.astype(np.int)
+    timestamp = best_effort_timestamp.astype(np.int64)
     timestamp_time = best_effort_timestamp_time
     
     if len(timestamp) > 1:

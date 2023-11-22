@@ -103,7 +103,7 @@ cdef inline int plusCircIndex(int ind, int last_index):
 cdef inline int minusCircIndex(int ind, int last_index):
     return ind - 1 if (ind > 0) else ind + last_index;
 
-def circOpposingPoints(np.ndarray[np.int_t, ndim=1] points_ind, \
+def circOpposingPoints(np.ndarray[np.int64_t, ndim=1] points_ind, \
 int start_ind, int end_ind, int vec_last_index, np.ndarray[np.float64_t, ndim=1] chain_code_len):
     '''%CIRCOPPOSINGPOINTS Find the equivalent point indices on the opposing side
     %   of a circular vector.
@@ -138,7 +138,7 @@ int start_ind, int end_ind, int vec_last_index, np.ndarray[np.float64_t, ndim=1]
     cdef float side1_size, side2_size, scale1to2, scale2to1
     cdef int ii, cur_ind
     cdef float delta_dist, point_dist
-    cdef np.ndarray[np.int_t, ndim=1] points_ind_out = points_ind.copy()
+    cdef np.ndarray[np.int64_t, ndim=1] points_ind_out = points_ind.copy()
     
     
     #% Re-order the start and end to make life simple. 
@@ -206,7 +206,7 @@ int start_ind, int end_ind, int vec_last_index, np.ndarray[np.float64_t, ndim=1]
 
     return points_ind_out
 
-cdef tuple min_distance(np.ndarray[np.float_t, ndim=2] x, int curr_ind, int range_min, int range_max):
+cdef tuple min_distance(np.ndarray[np.float64_t, ndim=2] x, int curr_ind, int range_min, int range_max):
     cdef double dx, dy, r, min_r
     cdef int j, near_ind
     
@@ -220,9 +220,9 @@ cdef tuple min_distance(np.ndarray[np.float_t, ndim=2] x, int curr_ind, int rang
             near_ind = j;
     return min_r, near_ind
 
-def circNearestPoints(np.ndarray[np.int_t, ndim=1] points_ind, \
-                            np.ndarray[np.int_t, ndim=1] min_ind, \
-                            np.ndarray[np.int_t, ndim=1] max_ind, \
+def circNearestPoints(np.ndarray[np.int64_t, ndim=1] points_ind, \
+                            np.ndarray[np.int64_t, ndim=1] min_ind, \
+                            np.ndarray[np.int64_t, ndim=1] max_ind, \
                             np.ndarray[np.float64_t, ndim=2] x):
     '''%CIRCNEARESTPOINTS For each point, find the nearest corresponding point
     %   within an interval of circularly-connected search points.
@@ -249,7 +249,7 @@ def circNearestPoints(np.ndarray[np.int_t, ndim=1] points_ind, \
     cdef int total_points = points_ind.shape[0]
     cdef int last_index = total_points-1
     #% Pre-allocate memory.
-    cdef np.ndarray[np.int_t, ndim=1] near_ind = np.zeros(total_points, dtype=np.int);
+    cdef np.ndarray[np.int64_t, ndim=1] near_ind = np.zeros(total_points, dtype=np.int64);
     cdef int i, near_ind1, near_ind2
     cdef float mag1, mag2
     
@@ -293,7 +293,7 @@ double cur_len, int start_ind, int end_ind, int last_index, bint isMax, bint isS
     
     return chainCodeLength2Index(cur_len, lenghts);
 
-def circOpposingNearestPoints(np.ndarray[np.int_t, ndim=1] points_ind, np.ndarray[np.float64_t, ndim=2] x, \
+def circOpposingNearestPoints(np.ndarray[np.int64_t, ndim=1] points_ind, np.ndarray[np.float64_t, ndim=2] x, \
 int start_ind, int end_ind, double search_len, np.ndarray[np.float64_t, ndim=1] chain_code_len):
     '''%CIRCOPPOSINGNEARESTPOINTS Find the nearest equivalent point indices on the
     %   opposing side (within a search window) of a circular vector.
@@ -335,8 +335,8 @@ int start_ind, int end_ind, double search_len, np.ndarray[np.float64_t, ndim=1] 
     cdef int start1, start2, end1, end2
     cdef int ii, cur_ind
     cdef double min_opposite, max_opposite
-    cdef np.ndarray[np.int_t, ndim=1] opposite_ind
-    cdef np.ndarray[np.int_t, ndim=1] points_ind_out = points_ind.copy()
+    cdef np.ndarray[np.int64_t, ndim=1] opposite_ind
+    cdef np.ndarray[np.int64_t, ndim=1] points_ind_out = points_ind.copy()
     
     #flags (just to make it easier to read)
     cdef bint SIDE1 = 1;
@@ -384,8 +384,8 @@ int start_ind, int end_ind, double search_len, np.ndarray[np.float64_t, ndim=1] 
     #% Side2 always goes from start to end in negative, index increments.
     side12 = (opposite_ind != start_ind) & (opposite_ind != end_ind);
     opposite_ind = opposite_ind[side12];
-    cdef np.ndarray[np.int_t, ndim=1] minOpoints_ind = np.zeros_like(opposite_ind)
-    cdef np.ndarray[np.int_t, ndim=1] maxOpoints_ind = np.zeros_like(opposite_ind)
+    cdef np.ndarray[np.int64_t, ndim=1] minOpoints_ind = np.zeros_like(opposite_ind)
+    cdef np.ndarray[np.int64_t, ndim=1] maxOpoints_ind = np.zeros_like(opposite_ind)
     
     
     #% Compute the minimum search points on side 2 (for the search intervals
@@ -444,12 +444,12 @@ def getHeadTailRegion(int head_ind, int tail_ind, np.ndarray[np.float64_t, ndim=
     
     return head_start, head_end, tail_start, tail_end
 
-def getInterBendSeeds(np.ndarray[np.int_t, ndim=1] bend_side1, np.ndarray[np.int_t, ndim=1] bend_side2, \
+def getInterBendSeeds(np.ndarray[np.int64_t, ndim=1] bend_side1, np.ndarray[np.int64_t, ndim=1] bend_side2, \
 np.ndarray[np.float64_t, ndim=2] contour, np.ndarray[np.float64_t, ndim=1] chain_code_len): 
     cdef int total_interbends = bend_side1.size-1
     #% Compute the inter-bend indices.
-    cdef np.ndarray[np.int_t, ndim=1] interbend_side1 = np.zeros((total_interbends), dtype = np.int)
-    cdef np.ndarray[np.int_t, ndim=1] interbend_side2 = np.zeros((total_interbends), dtype = np.int)
+    cdef np.ndarray[np.int64_t, ndim=1] interbend_side1 = np.zeros((total_interbends), dtype = np.int64)
+    cdef np.ndarray[np.int64_t, ndim=1] interbend_side2 = np.zeros((total_interbends), dtype = np.int64)
     cdef int i
     for i in range(total_interbends):
         interbend_side1[i] = chainCodeLength2Index((chain_code_len[bend_side1[i]] + \
@@ -482,7 +482,7 @@ cdef tuple getWrappedIndex(int start_side, int end_side, double inc_side, int cn
     
 def skeletonize(int start_side1, int end_side1, int inc_side1, \
 int start_side2, int end_side2, int inc_side2, \
-np.ndarray[np.float_t, ndim=2] cnt_side1, np.ndarray[np.float_t, ndim=2] cnt_side2):
+np.ndarray[np.float64_t, ndim=2] cnt_side1, np.ndarray[np.float64_t, ndim=2] cnt_side2):
     '''%SKELETONIZE Skeletonize takes the 2 pairs of start and end points on a
     %contour(s), then traces the skeleton between them using the specified
     %increments.
@@ -533,8 +533,8 @@ np.ndarray[np.float_t, ndim=2] cnt_side1, np.ndarray[np.float_t, ndim=2] cnt_sid
     
     #// % pre-allocate memory
     cdef int number_points = 2*int(floor(size1 + size2)); #preallocate memory
-    cdef np.ndarray[np.float_t, ndim=2] skeleton = np.zeros((number_points,2))
-    cdef np.ndarray[np.float_t, ndim=1] cnt_widths = np.zeros((number_points))
+    cdef np.ndarray[np.float64_t, ndim=2] skeleton = np.zeros((number_points,2))
+    cdef np.ndarray[np.float64_t, ndim=1] cnt_widths = np.zeros((number_points))
     
     cdef int j1 = start_side1;
     cdef int j2 = start_side2;
@@ -630,7 +630,7 @@ np.ndarray[np.float_t, ndim=2] cnt_side1, np.ndarray[np.float_t, ndim=2] cnt_sid
 
 
     
-def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t, ndim=1] widths, double worm_seg_size):
+def cleanSkeleton(np.ndarray[np.float64_t, ndim=2] skeleton, np.ndarray[np.float64_t, ndim=1] widths, double worm_seg_size):
     ''' * %CLEANSKELETON Clean an 8-connected skeleton by removing any overlap and
      * %interpolating any missing points.
      * %
@@ -675,16 +675,16 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
     cdef int number_points = skeleton.shape[0]
     cdef int last_index = number_points - 1
     
-    cdef np.ndarray[np.int_t, ndim=1] pSortC = np.lexsort((skeleton[:,1], skeleton[:,0])) 
-    cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)
+    cdef np.ndarray[np.int64_t, ndim=1] pSortC = np.lexsort((skeleton[:,1], skeleton[:,0])) 
+    cdef np.ndarray[np.int64_t, ndim=1] iSortC = np.argsort(pSortC)
     
     #output
     cdef int buff_size = 2*number_points;
-    cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
-    cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
+    cdef np.ndarray[np.float64_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = float); #//% pre-allocate memory
+    cdef np.ndarray[np.float64_t, ndim=1] cWidths = np.zeros(buff_size, dtype = float);
     
     #indexes
-    cdef np.ndarray[np.int_t, ndim=1] keep = np.arange(number_points)
+    cdef np.ndarray[np.int64_t, ndim=1] keep = np.arange(number_points)
     cdef int minI, maxI;
     cdef int s1I = 0; #// % the first index for the skeleton loop
     cdef int i, s2I, pI;

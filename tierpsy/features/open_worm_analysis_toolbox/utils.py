@@ -157,7 +157,7 @@ def separated_peaks(x, dist, use_max, value_cutoff):
     # the fft ..., a point can't be a peak if it is smaller than either of its
     # neighbors
 
-    np_true = np.ones(1, dtype=np.bool)
+    np_true = np.ones(1, dtype=np.bool_)
     if use_max:
         #                                           %> left                     > right
         # Matlab version:
@@ -171,7 +171,7 @@ def separated_peaks(x, dist, use_max, value_cutoff):
                 1:] > x[
                 0:-1]))
         # could_be_a_peak = np.logical_and(
-        # x > value_cutoff, np.concatenate((np.ones(1, dtype=np.bool), x[1:] >
+        # x > value_cutoff, np.concatenate((np.ones(1, dtype=np.bool_), x[1:] >
         # x[0:-1])))
 
         # greater than values to the right
@@ -180,7 +180,7 @@ def separated_peaks(x, dist, use_max, value_cutoff):
 
         # could_be_a_peak = np.logical_and(
         # could_be_a_peak, np.concatenate((x[0:-1] > x[1:], np.ones(1,
-        # dtype=np.bool))))
+        # dtype=np.bool_))))
 
         I1 = could_be_a_peak.nonzero()[0]
         I2 = np.argsort(-1 * x[I1])  # -1 => we want largest first
@@ -1064,7 +1064,7 @@ def compute_q_values(pvalues,
         raise ValueError("p-values out of range")
 
     m = len(pvalues)
-    pvalues = np.array(pvalues, dtype=np.float)
+    pvalues = np.array(pvalues, dtype=float)
 
     if vlambda is None:
         vlambda = np.arange(0, 0.95, 0.05)
@@ -1091,7 +1091,7 @@ def compute_q_values(pvalues,
             pi0 = min(pi0, 1.0)
         else:
 
-            pi0 = np.zeros(len(vlambda), np.float)
+            pi0 = np.zeros(len(vlambda), float)
 
             for i in range(len(vlambda)):
                 pi0[i] = (np.mean([x >= vlambda[i] for x in pvalues])
@@ -1110,8 +1110,8 @@ def compute_q_values(pvalues,
             elif pi0_method == "bootstrap":
                 minpi0 = min(pi0)
 
-                mse = np.zeros(len(vlambda), np.float)
-                pi0_boot = np.zeros(len(vlambda), np.float)
+                mse = np.zeros(len(vlambda), float)
+                pi0_boot = np.zeros(len(vlambda), float)
 
                 for i in range(100):
                     # sample pvalues
@@ -1143,7 +1143,7 @@ def compute_q_values(pvalues,
     # v[i] = number of observations less than or equal to pvalue[i]
     # Could this be done more elegantly?
     val2bin = len(bins) - np.digitize(pvalues, bins)
-    v = np.zeros(m, dtype=np.int)
+    v = np.zeros(m, dtype=np.int64)
     lastbin = None
     for x in range(m - 1, -1, -1):
         bin = val2bin[idx[x]]

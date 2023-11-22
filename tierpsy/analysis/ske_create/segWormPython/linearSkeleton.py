@@ -21,7 +21,7 @@ def betweenPoints(points_ind, startI, endI):
 
 def maxDistPoints(points_ind, oposite_ind, maxDistI, contour):
     #% How close are the points?
-    points = np.zeros(points_ind.size, dtype=np.bool)
+    points = np.zeros(points_ind.size, dtype=np.bool_)
     for i in range(points.size):
         if points_ind[i] > oposite_ind[i]:
             #% The points exceed the threshold.

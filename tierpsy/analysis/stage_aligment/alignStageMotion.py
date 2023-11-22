@@ -32,7 +32,7 @@ def _h_get_stage_inv(skeletons_file, timestamp):
 
     with tables.File(skeletons_file, 'r') as fid:
         stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
-        timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
+        timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int64)
         rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
         microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
         #2D to control for the scale vector directions
@@ -45,7 +45,7 @@ def _h_get_stage_inv(skeletons_file, timestamp):
     # adjust the stage_vec to match the timestamps in the skeletons
     good = (timestamp_ind >= first_frame) & (timestamp_ind <= last_frame)
 
-    ind_ff = (timestamp_ind[good] - first_frame).astype(np.int) #make sure it is int to be used as index
+    ind_ff = (timestamp_ind[good] - first_frame).astype(np.int64) #make sure it is int to be used as index
     if timestamp_ind.shape[0] > stage_vec_ori.shape[0]:
         #there are extra elements in the timestamp_ind, let's pad it with the same value in the stage vector
         extra_n = timestamp_ind.shape[0] - stage_vec_ori.shape[0]
@@ -156,10 +156,10 @@ def alignStageMotion(masked_file, skeletons_file):
             if np.any(np.isnan(video_timestamp_ind)): 
                 raise ValueError()
             else:
-                video_timestamp_ind = video_timestamp_ind.astype(np.int)
+                video_timestamp_ind = video_timestamp_ind.astype(np.int64)
         except(tables.exceptions.NoSuchNodeError, ValueError):
             warnings.warn('It is corrupt or do not exist. I will assume no dropped frames and deduce it from the number of frames.')
-            video_timestamp_ind = np.arange(tot_frames, dtype=np.int)
+            video_timestamp_ind = np.arange(tot_frames, dtype=np.int64)
     
     #%% The shift makes everything a bit more complicated. I have to remove the first frame, before resizing the array considering the dropping frames.
     if video_timestamp_ind.size > frame_diffs_d.size + 1:

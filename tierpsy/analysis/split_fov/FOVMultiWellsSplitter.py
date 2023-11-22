@@ -558,8 +558,8 @@ class FOVMultiWellsSplitter(object):
                         np.mean(coords[labels==ii]),
                         np.mean(coords[labels==ii+1])]));
             # store into self.wells for return
-            self.wells[d+'_min'] = lines_coords.copy().astype(np.int)[labels]
-            self.wells[d+'_max'] = lines_coords.copy().astype(np.int)[labels+1]
+            self.wells[d+'_min'] = lines_coords.copy().astype(np.int64)[labels]
+            self.wells[d+'_max'] = lines_coords.copy().astype(np.int64)[labels+1]
 
         return
 

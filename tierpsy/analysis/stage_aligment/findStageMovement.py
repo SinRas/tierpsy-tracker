@@ -253,7 +253,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
     #%%
     #% Pre-allocate memory.
     frames = np.zeros(frameDiffs.shape); #% stage movement status for frames
-    movesI = np.full((mediaTimes.size, 2), -100, np.int)
+    movesI = np.full((mediaTimes.size, 2), -100, np.int64)
     movesI[0,:] = 0;
     
     #% Compute the search boundary for the first frame-difference peak.
@@ -680,7 +680,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         #return empty vectors if there was no movement
         if len(locations) == 0:
             locations = np.zeros((1,2));
-        return np.zeros(frameDiffs.size, np.int), np.zeros((1,2), np.int), locations
+        return np.zeros(frameDiffs.size, np.int64), np.zeros((1,2), np.int64), locations
     
 
     #% Match the media time-stage movements to the frame-difference peaks.
@@ -855,7 +855,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 elif len(spareZeroTimeLocation)>0:
                     mediaTimes = np.insert(mediaTimes, 0,0)
                     locations = np.vstack((spareZeroTimeLocation, locations))
-                    movesI = np.vstack((movesI, np.zeros((1,2), np.int)))
+                    movesI = np.vstack((movesI, np.zeros((1,2), np.int64)))
                     timeOff = (prevPeakI+1) / fps - mediaTimes[i - 1];
                     
                     #% Redo the match.

@@ -135,7 +135,7 @@ def get_best_circles(mask, resize_factor = 8):
                                       total_num_peaks=9)
     #%%
 
-    cx, cy, radii = [np.round(x*resize_factor).astype(np.int) for x in (cx, cy, radii)]
+    cx, cy, radii = [np.round(x*resize_factor).astype(np.int64) for x in (cx, cy, radii)]
     #%%
 
     return list(zip(accums, cx, cy, radii))
@@ -164,7 +164,7 @@ def mask_to_food_contour(mask, n_bins = 90, frac_lowess=0.05, _is_debug=False):
     del_r = np.sqrt(xx*xx + yy*yy) - r0
     theta = np.arctan2(xx,yy)
 
-    theta_d = np.round((theta/np.pi)*n_bins).astype(np.int)
+    theta_d = np.round((theta/np.pi)*n_bins).astype(np.int64)
 
     #g = {k:[] for k in range(-n_bins, n_bins+1)}
     g = {k:[] for k in np.unique(theta_d)}

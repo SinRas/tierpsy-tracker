@@ -115,7 +115,7 @@ class WormFromTableSimple():
                 if np.any(np.isnan(timestamp_raw)):
                     raise ValueError
                 else:
-                    timestamp_inds = timestamp_raw.astype(np.int)
+                    timestamp_inds = timestamp_raw.astype(np.int64)
                     
                     #deal in the case they are repeating indexes (this happends sometimes in the last frame)
                     timestamp_inds, ind = np.unique(timestamp_inds, return_index=True)
@@ -233,7 +233,7 @@ class WormFromTable(WormFromTableSimple):
             ini_split = remainder//2
 
         #get the indexes to made the splits
-        split_ind = np.arange(ini_split, self.n_frames, split_size, dtype=np.int)
+        split_ind = np.arange(ini_split, self.n_frames, split_size, dtype=np.int64)
         n_splits = split_ind.size + 1
 
         #get the fields that will be splitted, they should be ndarrays with the same number of elements in the fisrt dimension

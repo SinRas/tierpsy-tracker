@@ -30,8 +30,8 @@ def getWormROI(img, CMx, CMy, roi_size=128):
     roi_range = np.round(np.array([-roi_center, roi_center]))
 
     # obtain bounding box from the trajectories
-    range_x = (CMx + roi_range).astype(np.int)
-    range_y = (CMy + roi_range).astype(np.int)
+    range_x = (CMx + roi_range).astype(np.int64)
+    range_y = (CMy + roi_range).astype(np.int64)
 
     if range_x[0] < 0:
         range_x[0] = 0
@@ -94,7 +94,7 @@ def pad_if_necessary(worm_roi, roi_corner, roi_size):
 def getROIFixSize(worms_in_frame, roi_size):
     tot_worms = len(worms_in_frame)
     worm_imgs = np.zeros((tot_worms, roi_size, roi_size))
-    roi_corners = np.zeros((tot_worms,2), np.int)
+    roi_corners = np.zeros((tot_worms,2), np.int64)
     indexes = np.array(sorted(worms_in_frame.keys()))
     
     for ii, irow in enumerate(indexes):

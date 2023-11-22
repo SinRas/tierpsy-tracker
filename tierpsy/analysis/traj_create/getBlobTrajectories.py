@@ -410,9 +410,9 @@ def getBlobsTable(masked_image_file,
     def _ini_plate_worms(traj_fid, masked_image_file):
         # intialize main table
 
-        int_dtypes = [('worm_index_blob', np.int),
-                      ('worm_index_joined', np.int),
-                      ('frame_number', np.int)]
+        int_dtypes = [('worm_index_blob', np.int64),
+                      ('worm_index_joined', np.int64),
+                      ('frame_number', np.int64)]
         dd = ['coord_x',
               'coord_y',
               'box_length',

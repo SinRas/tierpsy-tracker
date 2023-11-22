@@ -386,7 +386,7 @@ class SkeletonCalculatorType1(object):
         start_indices[start_indices < 0] = 0
         stop_indices[stop_indices >= n2] = n2 - 1
 
-        return start_indices.astype(np.int), stop_indices.astype(np.int)
+        return start_indices.astype(np.int64), stop_indices.astype(np.int64)
 
     #%%
     @staticmethod
@@ -558,7 +558,7 @@ class SkeletonCalculatorType1(object):
         n_s2 = s2.shape[1]
 
         end_s1_walk_I = np.ceil(n_s1 * END_S1_WALK_PCT)
-        end_s1_walk_I = end_s1_walk_I.astype(np.int)
+        end_s1_walk_I = end_s1_walk_I.astype(np.int64)
         end_s2_walk_I = 2 * end_s1_walk_I
         
         p1_I, p2_I = SkeletonCalculatorType1.h__getPartnersViaWalk(
@@ -573,7 +573,7 @@ class SkeletonCalculatorType1(object):
         match_I1[p1_I] = p2_I
 
         # Keep all our alterations
-        keep_mask = np.zeros(len(match_I1), dtype=np.bool)
+        keep_mask = np.zeros(len(match_I1), dtype=np.bool_)
         keep_mask[p1_I] = True
 
         # Add
@@ -674,8 +674,8 @@ class SkeletonCalculatorType1(object):
         """
 
         # TODO: remove hardcode, base on max of e1-s1+1
-        p1_I = np.zeros(200, dtype=np.int)
-        p2_I = np.zeros(200, dtype=np.int)
+        p1_I = np.zeros(200, dtype=np.int64)
+        p2_I = np.zeros(200, dtype=np.int64)
 
         c1 = s1  # Current 1 index
         c2 = s2  # Current 2 index

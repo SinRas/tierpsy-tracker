@@ -30,7 +30,7 @@ cdef double calculate_displacement(double dPx, double dPy):
     else:
         return sqrt(dPx*dPx + dPy*dPy);
  
-def circComputeChainCodeLengths(np.ndarray[np.float_t, ndim=2] points):
+def circComputeChainCodeLengths(np.ndarray[np.float64_t, ndim=2] points):
     '''
     %CIRCCOMPUTECHAINCODELENGTHS Compute the chain-code length, at each point,
     %   for a circularly-connected, continuous line of points.
@@ -59,7 +59,7 @@ def circComputeChainCodeLengths(np.ndarray[np.float_t, ndim=2] points):
     
     #//% Measure the difference between subsequent points.
     cdef double dPx, dPy;
-    cdef np.ndarray[np.float_t, ndim=1] lengths = np.ones(number_of_points, dtype = np.float); 
+    cdef np.ndarray[np.float64_t, ndim=1] lengths = np.ones(number_of_points, dtype = float); 
     cdef int i
     
     dPx = absDiff(points[0,0], points[lastIndex,0]);
@@ -77,7 +77,7 @@ def circComputeChainCodeLengths(np.ndarray[np.float_t, ndim=2] points):
 cdef inline double getSign(double x):
     return (0 < x) - (x < 0)
 
-cdef computeFractionalPixel(np.ndarray[np.float_t, ndim=2] points, \
+cdef computeFractionalPixel(np.ndarray[np.float64_t, ndim=2] points, \
 int curr_ind, int next_ind, \
 double delta_edge, double * point_fractional):
     '''// *% Compute fractional pixels for the first edge.
@@ -141,7 +141,7 @@ cdef inline int minusCircIndex(int ind, int last_index):
     return ind - 1 if (ind > 0) else ind + last_index;
 
 
-def circCurvature_old(np.ndarray[np.float_t, ndim=2] points, double edgeLength, np.ndarray[np.float_t, ndim=1] chainCodeLengths):
+def circCurvature_old(np.ndarray[np.float64_t, ndim=2] points, double edgeLength, np.ndarray[np.float64_t, ndim=1] chainCodeLengths):
     '''
     //   Inputs:
     //       points          - the vector of clockwise, circularly-connected
@@ -159,7 +159,7 @@ def circCurvature_old(np.ndarray[np.float_t, ndim=2] points, double edgeLength, 
     cdef int last_index = (number_of_points-1);
     cdef last_length = chainCodeLengths[last_index]
     
-    cdef np.ndarray[np.float_t, ndim=1] angles = np.zeros(number_of_points, dtype = np.float)
+    cdef np.ndarray[np.float64_t, ndim=1] angles = np.zeros(number_of_points, dtype = float)
     
     cdef double edge1, edge2;
     cdef int pv_ind; # central point index

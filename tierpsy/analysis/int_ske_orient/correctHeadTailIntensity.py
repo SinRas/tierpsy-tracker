@@ -185,7 +185,7 @@ def removeBadSkelBlocks(
 
     # get the gaps location before fussing groups, otherwise we will over
     # estimate the size of the groups
-    is_gap = np.full(len(trajectories_worm), True, np.bool)
+    is_gap = np.full(len(trajectories_worm), True, np.bool_)
     for kk, gg in enumerate(has_skel_group):
         is_gap[gg[0]:gg[1] + 1] = False
 
@@ -193,7 +193,7 @@ def removeBadSkelBlocks(
     has_skel_group = _fuseOverlapingGroups(has_skel_group, gap_size=gap_size)
 
     # to test for overlaps let's created a vector with the labeled groups
-    has_blocks_flags = np.full(len(trajectories_worm), -1, np.int)
+    has_blocks_flags = np.full(len(trajectories_worm), -1, np.int64)
     for kk, gg in enumerate(has_skel_group):
         has_blocks_flags[gg[0]:gg[1] + 1] = kk
 
@@ -345,8 +345,8 @@ def correctHeadTailIntWorm(
     worm_int_profile *= damp_factor
     if method == 'HEAD_BRIGHTER':
         segmentIndex = worm_int_profile.shape[1]//5
-        top_part = worm_int_profile[:,1:segmentIndex].astype(np.float)
-        bot_part = worm_int_profile[:,-segmentIndex:].astype(np.float)
+        top_part = worm_int_profile[:,1:segmentIndex].astype(float)
+        bot_part = worm_int_profile[:,-segmentIndex:].astype(float)
         # get the difference between the max of the first part and the min of the last part of skeleton
         #diff_ori = np.abs(np.median(top_part, axis=1) - np.min(bot_part, axis=1)) # diff_inv should be high when the orientation is correct
         #diff_inv = np.abs(np.min(top_part, axis=1) - np.max(bot_part, axis=1)) # diff_ori should be high when the orientation is incorrect
@@ -355,7 +355,7 @@ def correctHeadTailIntWorm(
 
     else: # default method is 'MEDIAN_INT'
         # worm median intensity
-        med_int = np.median(worm_int_profile, axis=0).astype(np.float)
+        med_int = np.median(worm_int_profile, axis=0).astype(float)
 
         # let's check for head tail errors by comparing the
         # total absolute difference between profiles using the original
@@ -530,7 +530,7 @@ def correctHeadTailIntensity(
             # to rec array
             switched_blocks = np.array(
                 switched_blocks, dtype=[
-                    ('worm_index', np.int), ('ini_frame', np.int), ('last_frame', np.int)])
+                    ('worm_index', np.int64), ('ini_frame', np.int64), ('last_frame', np.int64)])
             fid.create_table(
                 '/intensity_analysis',
                 'switched_head_tail',

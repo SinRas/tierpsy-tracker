@@ -48,7 +48,7 @@ def getValidIndexes(
 
     if len(trajectories_data[worm_index_type].unique()) == 1:
         good_skel_row = trajectories_data['skeleton_id'][
-            trajectories_data[valid_ind_str].values.astype(np.bool)].values
+            trajectories_data[valid_ind_str].values.astype(np.bool_)].values
         return (np.array([1]), good_skel_row)
 
     else:
@@ -79,7 +79,7 @@ def getValidIndexes(
         good_traj_index = good_worm[good_worm].index
 
         good_row = (trajectories_data[worm_index_type].isin(good_traj_index)) \
-            & (trajectories_data[valid_ind_str].values.astype(np.bool))
+            & (trajectories_data[valid_ind_str].values.astype(np.bool_))
         good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
 
         return (good_traj_index, good_skel_row)
@@ -434,8 +434,8 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
         tot_rows2fit = feats4fit[0].shape[0]
         # check all the data to fit has the same size in the first axis
         assert all(tot_rows2fit == featdat.shape[0] for featdat in feats4fit)
-        outliers_rob = np.zeros(tot_rows2fit, np.bool)
-        outliers_flag = np.zeros(tot_rows2fit, np.int)
+        outliers_rob = np.zeros(tot_rows2fit, np.bool_)
+        outliers_flag = np.zeros(tot_rows2fit, np.int64)
         assert len(feats4fit) < 64  # otherwise the outlier flag will not work
 
         for out_ind, dat in enumerate(feats4fit):
