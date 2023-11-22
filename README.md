@@ -1,17 +1,40 @@
-# Tierpsy Tracker
-<img src="https://user-images.githubusercontent.com/8364368/41229372-a9e8fcfa-6d73-11e8-877c-de306be55526.gif" width="800">
+# Tierpsy Tracker (install Python)
+This is a light-weight (not tested if the GUI works!) fork of the [Tierpsy Tracker][1].  
+Some changes were made to be able to easily install and use it as a module (in python script/jupyter/...).  
 
-Tierpsy Tracker is a multi-animal tracker developed in the [MRC-LMS](http://lms.mrc.ac.uk/) [Behavioural Phenomics Lab](https://tierpsy.com) at Imperial College London. The project combines the throughput of multiworm tracking with the resolution of single worm tracking, which means you can extract detailed phenotypic fingerprints from more animals.  A large field of view also makes it possible to analyse collective behaviours that depend on animal interactions.  The code is open source and extensible and we have ongoing projects using the tracker to analyse fish, *Drosophila* larvae, and fluorescently labelled worms.
+Follow these steps to install and use it.
 
-For more details see the [installation](docs/INSTALLATION.md) instructions section.
+## Installation
+0. You need to install [conda][2] first. (All you need to be able to do is to create/manage conda environments)
+1. Clone the repo in the `development` brance
+```bash
+git clone https://github.com/SinRas/tierpsy-tracker
+```
+2. Create conda environment with python=3.8, e.g. run following script (which creates a conda environment named `tt`)
+```bash
+conda create -n tt python=3.8
+```
+and activate it
+```bash
+conda activate tt
+```
+3. Install requirements (inside conda environment `tt`) using pip, e.g. by running scrip
+```bash
+pip install -r requirements.txt
+```
+4. Install `tierpsy` module from the cloned folder/repository using:
+```bash
+cd tierpsy-tracker  # if you have not changed directory to this repository in command line
+pip install -e .
+```
+5. Test if you can import the module inside your scripts/jupyter notebooks (make sure the environment `tt` is being used for running your script/jupyter lab), e.g. run following lines inside your code
+```python
+import tierpsy
+from tierpsy.features import tierpsy_features
+from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask, getSkeleton
+```
 
-### Publications
-* Javer, A., Currie, M., Lee, C.W. et al. An open-source platform for analyzing and sharing worm-behavior data. _Nat Methods_ **15**, 645–646 (2018). https://doi.org/10.1038/s41592-018-0112-1
 
-* Javer, A., Ripoll-Sánchez, L., and Brown, A.E.X. Powerful and interpretable behavioural features for quantitative phenotyping of _Caenorhabditis elegans_. _Phil. Trans. R. Soc. B_ **373**: 20170375 (2018).
-http://doi.org/10.1098/rstb.2017.0375
 
-### [Installation Instructions](docs/INSTALLATION.md)
-### [How to Use](docs/HOWTO.md)
-### [Algorithm Explanation](docs/EXPLANATION.md)
-### [Output Files](docs/OUTPUTS.md)
+[1]: https://github.com/Tierpsy/tierpsy-tracker/tree/development
+[2]: https://conda.io/projects/conda/en/latest/user-guide/install/index.html
