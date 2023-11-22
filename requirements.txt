@@ -1,12 +1,11 @@
 cython
-keras=2.1.5
-opencv
-tensorflow
-numpy >=1.14
+keras==2.1.5
+opencv-python
+numpy
 matplotlib
-pytables
-pandas<1.0
-pyqt
+tables
+pandas
+pyqt5
 scipy
 scikit-learn
 scikit-image
@@ -14,3 +13,5 @@ statsmodels
 numba
 tqdm
 requests
+jupyterlab
+h5py
