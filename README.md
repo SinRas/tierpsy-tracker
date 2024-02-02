@@ -5,7 +5,7 @@ Some changes were made to be able to easily install and use it as a module (in p
 Follow these steps to install and use it.
 
 ## Installation
-0. You need to install [conda][2] first. (All you need to be able to do is to create/manage conda environments)
+0. You need to install [conda][2] first. (All you need to be able to do is to create/manage conda environments) and also [Microsoft C++ Build Tools][3].
 1. Clone the repo in the `development` brance
 ```bash
 git clone https://github.com/SinRas/tierpsy-tracker
@@ -38,3 +38,4 @@ from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask, getSkele
 
 [1]: https://github.com/Tierpsy/tierpsy-tracker/tree/development
 [2]: https://conda.io/projects/conda/en/latest/user-guide/install/index.html
+[3]: https://visualstudio.microsoft.com/visual-cpp-build-tools/
