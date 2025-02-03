@@ -66,7 +66,7 @@ def getMidBodySeed(
     midbody1_s1 = chainCodeLength2Index(midbody1_s1, chain_code_len)
     midbody1_s2 = circOpposingNearestPoints(
         np.array(
-            [midbody1_s1]),
+            [midbody1_s1]).astype(np.int64),
         contour,
         head_ind,
         tail_ind,
@@ -82,7 +82,7 @@ def getMidBodySeed(
     midbody2_s2 = chainCodeLength2Index(midbody2_s2, chain_code_len)
     midbody2_s1 = circOpposingNearestPoints(
         np.array(
-            [midbody2_s2]),
+            [midbody2_s2]).astype(np.int64),
         contour,
         head_ind,
         tail_ind,
@@ -141,7 +141,7 @@ def getBendsSeeds(contour, bend_ind, chain_code_len, head_ind, tail_ind,
     #% Remove any bend indices too close to the head and/or tail.
     bend1_s1 = bend_ind[(bend_ind >= head_end) & (bend_ind <= tail_start)]
     bend1_s2 = circOpposingNearestPoints(
-        bend1_s1,
+        bend1_s1.astype(np.int64),
         contour,
         head_ind,
         tail_ind,
@@ -155,7 +155,7 @@ def getBendsSeeds(contour, bend_ind, chain_code_len, head_ind, tail_ind,
 
     #% Minimize the width at the bend.
     bend1_s1 = circOpposingNearestPoints(
-        bend1_s2,
+        bend1_s2.astype(np.int64),
         contour,
         head_ind,
         tail_ind,
@@ -171,7 +171,7 @@ def getBendsSeeds(contour, bend_ind, chain_code_len, head_ind, tail_ind,
     #% Compute the bend indices for side 2.
     bend2_s2 = bend_ind[(bend_ind >= tail_end) & (bend_ind <= head_start)]
     bend2_s1 = circOpposingNearestPoints(
-        bend2_s2,
+        bend2_s2.astype(np.int64),
         contour,
         head_ind,
         tail_ind,
@@ -185,7 +185,7 @@ def getBendsSeeds(contour, bend_ind, chain_code_len, head_ind, tail_ind,
 
     #% Minimize the width at the bend.
     bend2_s2 = circOpposingNearestPoints(
-        bend2_s1,
+        bend2_s1.astype(np.int64),
         contour,
         head_ind,
         tail_ind,
