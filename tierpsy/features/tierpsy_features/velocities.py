@@ -62,7 +62,7 @@ relative_to_dict = {'body' : ('head_tip', 'neck', 'hips', 'tail_tip'),
 def _h_orientation_vector(x, axis=None):
     return x[:, 0, :] - x[:, -1, :]
 
-def _h_get_velocity(x, delta_frames, fps):
+def _h_get_velocity(x, delta_frames, fps, timestamps = None):
     if delta_frames < 1:
         raise ValueError('Invalid number of delta frames %i' % delta_frames)
     delta_time = delta_frames/fps
@@ -70,7 +70,13 @@ def _h_get_velocity(x, delta_frames, fps):
         #not enough frames return empty array
         return np.full_like(x, np.nan)
 
-    v = (x[delta_frames:] - x[:-delta_frames])/delta_time
+    if timestamps is None:
+        v = (x[delta_frames:] - x[:-delta_frames])/delta_time
+    else:
+        _denom = (timestamps[delta_frames:] - timestamps[:-delta_frames])
+        if x.ndim != 1 and x.shape[0] == timestamps.shape[0]:
+            _denom = _denom[:, np.newaxis]
+        v = (x[delta_frames:] - x[:-delta_frames])/_denom
 
     #pad with nan so the vector match the original vectors
     pad_w = [(int(np.floor(delta_frames/2)), int(np.ceil(delta_frames/2)))]
@@ -107,7 +113,7 @@ def _h_segment_position(skeletons, partition):
     return coords, orientation_v
 
 #%%
-def get_velocity(skeletons, partition, delta_frames, fps):
+def get_velocity(skeletons, partition, delta_frames, fps, timestamps = None):
     coords, orientation_v = _h_segment_position(skeletons, partition = partition)
     
     nan_frames = np.isnan(coords[:, 0])
@@ -123,7 +129,7 @@ def get_velocity(skeletons, partition, delta_frames, fps):
                 coords[:, ii] = np.interp(x, xp, coords[xp, ii])
                 orientation_v[:, ii] = np.interp(x, xp, orientation_v[xp, ii])
     
-    velocity = _h_get_velocity(coords, delta_frames, fps)
+    velocity = _h_get_velocity(coords, delta_frames, fps, timestamps=timestamps)
     speed = np.linalg.norm(velocity, axis=1)
     #I do not need to normalize the vectors because it will only add a constant factor, 
     #and I am only interested in the sign
@@ -134,7 +140,7 @@ def get_velocity(skeletons, partition, delta_frames, fps):
     orientation = np.arctan2(orientation_v[:, 0], orientation_v[:, 1])
     #wrap the angles so the change is continous no jump between np.pi and -np.pi
     orientation = nanunwrap(orientation) 
-    angular_velocity = _h_get_velocity(orientation, delta_frames, fps)
+    angular_velocity = _h_get_velocity(orientation, delta_frames, fps, timestamps=timestamps)
     
     centered_skeleton = _h_center_skeleton(skeletons, orientation, coords)
 
@@ -145,21 +151,21 @@ def get_velocity(skeletons, partition, delta_frames, fps):
     return signed_speed, angular_velocity, centered_skeleton
 
 #%%
-def _h_relative_velocity(segment_coords, delta_frames, fps):
+def _h_relative_velocity(segment_coords, delta_frames, fps, timestamps=None):
     x = segment_coords[:, 0]
     y = segment_coords[:, 1]
     r = np.sqrt(x**2+y**2)
     theta = nanunwrap(np.arctan2(y,x))
     
-    r_radial_velocity = _h_get_velocity(r, delta_frames, fps)
-    r_angular_velocity = _h_get_velocity(theta, delta_frames, fps)
+    r_radial_velocity = _h_get_velocity(r, delta_frames, fps, timestamps=timestamps)
+    r_angular_velocity = _h_get_velocity(theta, delta_frames, fps, timestamps=timestamps)
     
     return r_radial_velocity, r_angular_velocity
 
 
 
 #%%
-def get_relative_velocities(centered_skeleton, partitions, delta_frames, fps):
+def get_relative_velocities(centered_skeleton, partitions, delta_frames, fps, timestamps=None):
     p_obj = DataPartition(partitions, n_segments=centered_skeleton.shape[1])
 
     r_radial_velocities = {}
@@ -170,7 +176,7 @@ def get_relative_velocities(centered_skeleton, partitions, delta_frames, fps):
         
     
         segment_coords = p_obj.apply(centered_skeleton, p, func=np.nanmean)
-        r_radial_velocity, r_angular_velocity = _h_relative_velocity(segment_coords, delta_frames, fps)
+        r_radial_velocity, r_angular_velocity = _h_relative_velocity(segment_coords, delta_frames, fps, timestamps=timestamps)
         r_radial_velocities[p] = r_radial_velocity
         r_angular_velocities[p] = r_angular_velocity
         
@@ -179,14 +185,14 @@ def get_relative_velocities(centered_skeleton, partitions, delta_frames, fps):
     return r_radial_velocities, r_angular_velocities
 
 
-def get_relative_speed_midbody(centered_skeleton, delta_frames, fps):
+def get_relative_speed_midbody(centered_skeleton, delta_frames, fps, timestamps=None):
     '''
     This velocity meassures how the midbody changes in relation to the body central axis.
     I cannot really define this for the othes parts without getting too complicated.
     '''
     p_obj = DataPartition(['midbody'], n_segments=centered_skeleton.shape[1])
     segment_coords = p_obj.apply(centered_skeleton, 'midbody', func=np.nanmean)
-    return _h_get_velocity(segment_coords[:, 0], delta_frames, fps)
+    return _h_get_velocity(segment_coords[:, 0], delta_frames, fps, timestamps=timestamps)
 
 #%%
 
@@ -245,7 +251,7 @@ def animate_velocity(skel_a, ini_arrow, arrow_size, speed_v, ang_v):
     return anim
 
 #%%
-def get_velocity_features(skeletons, delta_frames, fps):
+def get_velocity_features(skeletons, delta_frames, fps, timestamps=None):
     assert isinstance(delta_frames, int)
     
     if skeletons.shape[0] < delta_frames:
@@ -253,14 +259,14 @@ def get_velocity_features(skeletons, delta_frames, fps):
     
     
     def _process_part(part):
-        signed_speed, angular_velocity, centered_skeleton = get_velocity(skeletons, part, delta_frames, fps)
+        signed_speed, angular_velocity, centered_skeleton = get_velocity(skeletons, part, delta_frames, fps, timestamps=timestamps)
         
         if part == 'body':
             #speed without prefix is the body speed
             part_velocities = [('speed', signed_speed),
                                ('angular_velocity', angular_velocity)]
             #this is really a special case. midbody moving like this <- | ->
-            relative_speed_midbody = get_relative_speed_midbody(centered_skeleton, delta_frames, fps)
+            relative_speed_midbody = get_relative_speed_midbody(centered_skeleton, delta_frames, fps, timestamps=timestamps)
             
             #add the body signed speed and angular velocity. This values are very similar for the other parts
             part_velocities.append(('relative_to_body_speed_midbody', relative_speed_midbody))
@@ -274,7 +280,8 @@ def get_velocity_features(skeletons, delta_frames, fps):
             r_radial_velocities, r_angular_velocities = get_relative_velocities(centered_skeleton, 
                                     partitions, 
                                     delta_frames, 
-                                    fps)
+                                    fps,
+                                    timestamps=timestamps)
             #pack into a dictionary
             for p in partitions:
                 k_r = 'relative_to_{}_radial_velocity_{}'.format(part, p)
